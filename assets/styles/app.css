@@ -1,4 +1,2 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* assets/css/app.css */
+@import "~bootstrap/dist/css/bootstrap.css";

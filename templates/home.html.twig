@@ -3,7 +3,7 @@
 {% block title %}FilmFruits{% endblock %}
 {% block body %}
     <div class="flex justify-center items-center m-auto" style="background-image: url({{ asset('assets/FruitsPattern.png') }}); background-size: cover; height: 50vh; background-position: center;">
-        <div class="m-4 flex flex-col justify-end text-center bg-black border-2" style="height: 40vh; width: 27vh; background-image: url('{{ baseImageUrl }}{{ pickOfTheWeek.getCoverPhoto() }}'); background-size: cover;">
+        <div class="m-4 flex flex-col justify-end text-center bg-black border-2 w-12 h-12" style="background-image: url('{{ baseImageUrl }}{{ pickOfTheWeek.movie.getCoverPhoto() }}'); background-size: cover;">
             <div class="m-2">
                 <h1 class="font-black text-2xl">FRUIT PICK</h1>
                 <p class="font-bold">of the Week</p>
@@ -16,9 +16,9 @@
             <div class="flex flex-row justify-start items-center mt-2 text-base gap-2 container overflow-x-auto">
                 {% for pick in juiciestPicks %}
                     <a class="flex flex-col justify-center">
-                        <div class="bg-red-500 flex flex-col justify-end items-start" style="height: 30vh; width: 20vh; background-image: url('{{ baseImageUrl }}{{ pick.getCoverPhoto() }}'); background-size: contain;">
+                        <div class="bg-red-500 flex flex-col justify-end items-start" style="height: 30vh; width: 20vh; background-image: url('{{ baseImageUrl }}{{ pick.movie.getCoverPhoto() }}'); background-size: contain;">
                         </div>
-                        <h2 class="ml-2 mb-1 font-bold text-shadow drop-shadow-2xl">{{ pick.getTitle() }}</h2>
+                        <h2 class="ml-2 mb-1 font-bold text-shadow drop-shadow-2xl">{{ pick.movie.getTitle() }}</h2>
                     </a>
                 {% endfor %}
             </div>

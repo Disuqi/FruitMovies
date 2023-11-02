@@ -31,7 +31,7 @@ class Movie
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $genre = null;
 
-    #[ORM\OneToMany(mappedBy: 'movie_id', targetEntity: Review::class)]
+    #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
     private Collection $reviews;
 
     public function __construct()
@@ -116,7 +116,7 @@ class Movie
     {
         if (!$this->reviews->contains($review)) {
             $this->reviews->add($review);
-            $review->setMovieId($this);
+            $review->setMovie($this);
         }
 
         return $this;
@@ -126,8 +126,8 @@ class Movie
     {
         if ($this->reviews->removeElement($review)) {
             // set the owning side to null (unless already changed)
-            if ($review->getMovieId() === $this) {
-                $review->setMovieId(null);
+            if ($review->getMovie() === $this) {
+                $review->setMovie(null);
             }
         }
 

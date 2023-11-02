@@ -23,28 +23,39 @@ class MovieRepository extends ServiceEntityRepository
         parent::__construct($registry, Movie::class);
     }
 
-//    /**
-//     * @return Movie[] Returns an array of Movie objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getTopRatedThisWeek()
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
+            ->from(Movie::class, 'movie')
+            ->join('movie.reviews', 'r')
+            ->where('r.date_reviewed BETWEEN :start AND :end')
+            ->groupBy('movie')
+            ->orderBy('numberOfReviews', 'DESC')
+            ->addOrderBy('averageRating', 'DESC')
+            ->setParameter('start', new \DateTime('-7 days'))
+            ->setParameter('end', new \DateTime());
 
-//    public function findOneBySomeField($value): ?Movie
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        // Setting the custom DTO as the result class
+        $results = $qb->getQuery()->getResult();
+
+        // Map results to DTO
+        return array_map(function($result) {
+            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        }, $results);
+    }
+}
+
+class MovieRatingDTO
+{
+    public readonly Movie $movie;
+    public readonly float $averageRating;
+    public readonly int $numberOfReviews;
+
+    public function __construct(Movie $movie, float $averageRating, int $numberOfReviews)
+    {
+        $this->movie = $movie;
+        $this->averageRating = $averageRating;
+        $this->numberOfReviews = $numberOfReviews;
+    }
 }
