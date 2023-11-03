@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ movie.getTitle() }}{% endblock %}
+{% block body %}
+    <div class="flex flex-row container mx-auto h-[90vh] items-center justify-center ml-10">
+        <img class="w-96" src="{{ baseImageUrl }}{{ movie.getCoverPhoto() }}" alt="{{ movie.getCoverPhoto() }} Cover Photo"/>
+        <div class="m-32 h-[56vh] flex flex-col justify-start items-start">
+            <h1 class="text-4xl">{{ movie.getTitle() }}</h1>
+            <p class="text-xl">Some waffle here</p>
+            <p>RATING</p>
+            <h2 class="text-3xl">Reviews</h2>
+        </div>
+    </div>
+{% endblock %}
