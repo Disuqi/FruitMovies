@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MovieRepository extends ServiceEntityRepository
 {
-    public const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500/";
+    public const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w1280/";
 
     public function __construct(ManagerRegistry $registry)
     {
