@@ -1,0 +1,16 @@
+{% extends 'components/base.html.twig' %}
+{% block title %}Search{% endblock %}
+{% block body %}
+    {{ include('components/header.html.twig') }}
+    <div>
+
+    </div>
+    <div class="flex flex-row flex-wrap container">
+        {% for movie in movies %}
+            <div class="flex flex-col">
+                <img src="{{ baseImageUrl }}{{ movie.movie.getCoverPhoto() }}" alt="Cover Photo"/>
+                <h1>{{ movie.movie.getTitle() }}</h1>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

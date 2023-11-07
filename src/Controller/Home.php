@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Home extends AbstractController
 {
-    #[Route('/')]
+    #[Route('/', name:"home")]
     #[Template('home.html.twig')]
     public function home(MovieRepository $movieRepository) : array
     {
@@ -25,7 +25,7 @@ class Home extends AbstractController
         return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "pickOfTheWeek" => $movieOfTheWeek, "juiciestPicks" => $juiciestPicks];
     }
 
-    #[Route('/{id}', name:"movie")]
+    #[Route('/movie/{id}', name:"movie")]
     #[Template('movie.html.twig')]
     public function movie(MovieRepository $movieRepository, ReviewRepository $reviewRepository, int $id) : array
     {

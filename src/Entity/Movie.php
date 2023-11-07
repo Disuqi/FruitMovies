@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MovieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
@@ -28,15 +29,19 @@ class Movie
     #[ORM\Column(length: 255)]
     private ?string $cover_photo = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $genre = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $overview = null;
 
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
     private Collection $reviews;
 
+    #[ORM\OneToMany(mappedBy: 'movie', targetEntity: MovieActor::class)]
+    private Collection $movieActorRelations;
+
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
+        $this->movieActorRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,14 +97,14 @@ class Movie
         return $this;
     }
 
-    public function getGenre(): ?string
+    public function getOverview(): ?string
     {
-        return $this->genre;
+        return $this->overview;
     }
 
-    public function setGenre(string $genre): static
+    public function setOverview(string $overview): static
     {
-        $this->genre = $genre;
+        $this->overview = $overview;
 
         return $this;
     }
@@ -132,5 +137,15 @@ class Movie
         }
 
         return $this;
+    }
+
+    public function getActors(): array
+    {
+        $actors = [];
+        foreach($this->movieActorRelations as $relation)
+        {
+            $actors[] = $relation->getActor();
+        }
+        return $actors;
     }
 }

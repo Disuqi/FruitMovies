@@ -7,35 +7,49 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+enum Roles : string
+{
+    case USER = 'USER';
+    case MODERATOR = 'MODERATOR';
+    case ADMIN = 'ADMIN';
+}
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $username = null;
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
+    private string $username;
 
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $password;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $email;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $date_joined = null;
+    #[ORM\Column(nullable: false)]
+    private \DateTimeImmutable $date_joined;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile_photo = null;
 
-    #[ORM\Column]
-    private ?int $role = null;
+    #[ORM\Column(type: 'json')]
+    private ?array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Review::class)]
     private Collection $reviews;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
 
     public function __construct()
     {
@@ -107,14 +121,18 @@ class User
         return $this;
     }
 
-    public function getRole(): ?int
+    public function getRoles(): array
     {
-        return $this->role;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'DEFAULT';
+
+        return array_unique($roles);
     }
 
-    public function setRole(int $role): static
+    public function setRoles(array $roles): self
     {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
     }
@@ -131,7 +149,7 @@ class User
     {
         if (!$this->reviews->contains($review)) {
             $this->reviews->add($review);
-            $review->setUserId($this);
+            $review->setUser($this);
         }
 
         return $this;
@@ -141,10 +159,32 @@ class User
     {
         if ($this->reviews->removeElement($review)) {
             // set the owning side to null (unless already changed)
-            if ($review->getUserId() === $this) {
-                $review->setUserId(null);
+            if ($review->getUser() === $this) {
+                $review->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }
