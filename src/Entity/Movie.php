@@ -32,6 +32,9 @@ class Movie
     #[ORM\Column(type: Types::TEXT)]
     private ?string $overview = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $release_date = null;
+
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
     private Collection $reviews;
 
@@ -105,6 +108,18 @@ class Movie
     public function setOverview(string $overview): static
     {
         $this->overview = $overview;
+
+        return $this;
+    }
+
+    public function getReleaseDate(): ?\DateTimeImmutable
+    {
+        return $this->release_date;
+    }
+
+    public function setReleaseDate(\DateTimeImmutable $release_date): static
+    {
+        $this->release_date = $release_date;
 
         return $this;
     }

@@ -44,6 +44,48 @@ class MovieRepository extends ServiceEntityRepository
             return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
         }, $results);
     }
+
+    public function getTopRatedMovies()
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
+            ->from(Movie::class, 'movie')
+            ->join('movie.reviews', 'r')
+            ->groupBy('movie')
+            ->orderBy('numberOfReviews', 'DESC')
+            ->addOrderBy('averageRating', 'DESC');
+
+        // Setting the custom DTO as the result class
+        $results = $qb->getQuery()->getResult();
+
+        // Map results to DTO
+        return array_map(function($result) {
+            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        }, $results);
+    }
+
+    public function getPopularMovies()
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
+            ->from(Movie::class, 'movie')
+            ->join('movie.reviews', 'r')
+            ->groupBy('movie')
+            ->orderBy('numberOfReviews', 'DESC');
+
+        // Setting the custom DTO as the result class
+        $results = $qb->getQuery()->getResult();
+
+        // Map results to DTO
+        return array_map(function($result) {
+            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        }, $results);
+    }
+
+    public function getLatestMovies()
+    {
+
+    }
 }
 
 class MovieRatingDTO
