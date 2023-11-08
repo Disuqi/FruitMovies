@@ -30,9 +30,9 @@
         </div>
         <div class="flex flex-row flex-wrap justify-center gap-2">
             {% for movie in movies %}
-                <a href="{{ path('movie', {id: movie.movie.getId()}) }}" class="flex flex-col w-56 my-1 hover:brightness-125 transition ease-in-out duration-200">
-                    <img src="{{ baseImageUrl }}{{ movie.movie.getCoverPhoto() }}" alt="Cover Photo"/>
-                    <h1 class="font-bold text-xl">{{ movie.movie.getTitle() }}</h1>
+                <a href="{{ path('movie', {id: movie.getId()}) }}" class="flex flex-col w-56 my-1 hover:brightness-125 transition ease-in-out duration-200">
+                    <img src="{{ baseImageUrl }}{{ movie.getCoverPhoto() }}" alt="Cover Photo"/>
+                    <h1 class="font-bold text-xl">{{ movie.getTitle() }}</h1>
                 </a>
             {% endfor %}
         </div>

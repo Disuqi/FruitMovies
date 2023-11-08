@@ -26,78 +26,90 @@ class MovieRepository extends ServiceEntityRepository
     public function getTopRatedThisWeek()
     {
         $qb = $this->createQueryBuilder('m')
-            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
-            ->from(Movie::class, 'movie')
-            ->join('movie.reviews', 'r')
+            ->select('m, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
+            ->join('m.reviews', 'r')
             ->where('r.date_reviewed BETWEEN :start AND :end')
-            ->groupBy('movie')
+            ->groupBy('m')
             ->orderBy('numberOfReviews', 'DESC')
             ->addOrderBy('averageRating', 'DESC')
             ->setParameter('start', new \DateTime('-7 days'))
             ->setParameter('end', new \DateTime());
 
-        // Setting the custom DTO as the result class
         $results = $qb->getQuery()->getResult();
 
-        // Map results to DTO
-        return array_map(function($result) {
-            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        return array_map(function ($row) {
+            return $row[0];
         }, $results);
     }
 
     public function getTopRatedMovies()
     {
         $qb = $this->createQueryBuilder('m')
-            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
-            ->from(Movie::class, 'movie')
-            ->join('movie.reviews', 'r')
-            ->groupBy('movie')
-            ->orderBy('numberOfReviews', 'DESC')
-            ->addOrderBy('averageRating', 'DESC');
+            ->select('m, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
+            ->join('m.reviews', 'r')
+            ->groupBy('m')
+            ->having('COUNT(r.id) > 1')
+            ->orderBy('averageRating', 'DESC');
 
-        // Setting the custom DTO as the result class
         $results = $qb->getQuery()->getResult();
 
-        // Map results to DTO
-        return array_map(function($result) {
-            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        return array_map(function ($row) {
+            return $row[0];
         }, $results);
     }
 
     public function getPopularMovies()
     {
         $qb = $this->createQueryBuilder('m')
-            ->select('movie, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
-            ->from(Movie::class, 'movie')
-            ->join('movie.reviews', 'r')
-            ->groupBy('movie')
-            ->orderBy('numberOfReviews', 'DESC');
+            ->select('m, COUNT(r.id) as reviewCount')
+            ->join('m.reviews', 'r')
+            ->groupBy('m')
+            ->orderBy('reviewCount', 'DESC');
 
-        // Setting the custom DTO as the result class
         $results = $qb->getQuery()->getResult();
 
-        // Map results to DTO
-        return array_map(function($result) {
-            return new MovieRatingDTO($result[0], (float) $result['averageRating'], (int) $result['numberOfReviews']);
+        return array_map(function ($row) {
+            return $row[0];
         }, $results);
     }
 
+
     public function getLatestMovies()
     {
+        $qb = $this->createQueryBuilder('m')
+            ->orderBy('m.release_date', 'DESC')
+            ->where('m.release_date BETWEEN :start AND :end')
+            ->setParameter('start', new \DateTime('-60 days'))
+            ->setParameter('end', new \DateTime());;
 
+        return $qb->getQuery()->getResult();
     }
-}
 
-class MovieRatingDTO
-{
-    public readonly Movie $movie;
-    public readonly float $averageRating;
-    public readonly int $numberOfReviews;
-
-    public function __construct(Movie $movie, float $averageRating, int $numberOfReviews)
+    public function getUpcomingMovies(): array
     {
-        $this->movie = $movie;
-        $this->averageRating = $averageRating;
-        $this->numberOfReviews = $numberOfReviews;
+        $qb = $this->createQueryBuilder('m')
+            ->where('m.release_date > :now')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('m.release_date', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function searchMovie(string $searchQuery): array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->where('m.title LIKE :searchTerm')
+            ->orWhere('m.overview LIKE :searchTerm')
+            ->setParameter('searchTerm', '%' . $searchQuery . '%')
+            ->orderBy('m.release_date', 'DESC');
+
+        return  $qb->getQuery()->getResult();
+    }
+
+    public function getAll() : array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->orderBy('m.release_date', 'DESC');
+        return  $qb->getQuery()->getResult();
     }
 }

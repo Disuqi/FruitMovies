@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 
+use App\Entity\Movie;
 use App\Repository\MovieRepository;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,9 +28,8 @@ class Home extends AbstractController
 
     #[Route('/movie/{id}', name:"movie")]
     #[Template('movie.html.twig')]
-    public function movie(MovieRepository $movieRepository, ReviewRepository $reviewRepository, int $id) : array
+    public function movie(MovieRepository $movieRepository, ReviewRepository $reviewRepository, Movie $movie) : array
     {
-        $movie = $movieRepository->find($id);
         $reviews = $reviewRepository->findBy(["movie" => $movie]);
         return ["baseImageUrl" => MovieRepository::BASE_IMAGE_URL, "movie" => $movie, "reviews" => $reviews];
     }
