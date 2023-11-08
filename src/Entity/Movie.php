@@ -32,7 +32,7 @@ class Movie
     #[ORM\Column(type: Types::TEXT)]
     private ?string $overview = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $release_date = null;
 
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
