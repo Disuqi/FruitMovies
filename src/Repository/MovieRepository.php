@@ -30,9 +30,9 @@ class MovieRepository extends ServiceEntityRepository
             ->join('m.reviews', 'r')
             ->where('r.date_reviewed BETWEEN :start AND :end')
             ->groupBy('m')
-            ->orderBy('numberOfReviews', 'DESC')
-            ->addOrderBy('averageRating', 'DESC')
-            ->setParameter('start', new \DateTime('-7 days'))
+            ->orderBy('averageRating', 'DESC')
+            ->addOrderBy('numberOfReviews', 'DESC')
+            ->setParameter('start', new \DateTime('-2 weeks'))
             ->setParameter('end', new \DateTime());
 
         $results = $qb->getQuery()->getResult();
@@ -48,8 +48,8 @@ class MovieRepository extends ServiceEntityRepository
             ->select('m, AVG(r.score) as averageRating, COUNT(r.id) as numberOfReviews')
             ->join('m.reviews', 'r')
             ->groupBy('m')
-            ->having('COUNT(r.id) > 1')
-            ->orderBy('averageRating', 'DESC');
+            ->orderBy('numberOfReviews', 'DESC')
+            ->addOrderBy('averageRating', 'DESC');
 
         $results = $qb->getQuery()->getResult();
 

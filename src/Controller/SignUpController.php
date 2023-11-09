@@ -57,9 +57,8 @@ class SignUpController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        return $this->render('authentication/signUp.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
+        return $this->render('authentication/signUp.html.twig',
+            ['registrationForm' => $form->createView(),]);
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
