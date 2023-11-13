@@ -6,6 +6,8 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Repository\MovieRepository;
 use App\Repository\ReviewRepository;
+use App\Utils\Search\OrderBy;
+use App\Utils\Search\SearchOptions;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -20,15 +22,15 @@ class Home extends AbstractController
     #[Template('home.html.twig')]
     public function home(MovieRepository $movieRepository) : array
     {
-        $juiciestPicks = $movieRepository->getTopRatedThisWeek();
-        $movieOfTheWeek = array_shift($juiciestPicks);
+        $juiciestPicks = $movieRepository->searchMovies(new SearchOptions(OrderBy::Rating, additionalOrderBy: OrderBy::Reviews, startDate: new \DateTime('-1 month')));
+        $movieOfTheMonth = array_shift($juiciestPicks);
 
-        return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "pickOfTheWeek" => $movieOfTheWeek, "juiciestPicks" => $juiciestPicks];
+        return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "pickOfTheMonth" => $movieOfTheMonth, "juiciestPicks" => $juiciestPicks];
     }
 
     #[Route('/movie/{id}', name:"movie")]
     #[Template('movie.html.twig')]
-    public function movie(MovieRepository $movieRepository, ReviewRepository $reviewRepository, Movie $movie) : array
+    public function movie(ReviewRepository $reviewRepository, Movie $movie) : array
     {
         $reviews = $reviewRepository->findBy(["movie" => $movie]);
         return ["baseImageUrl" => MovieRepository::BASE_IMAGE_URL, "movie" => $movie, "reviews" => $reviews];

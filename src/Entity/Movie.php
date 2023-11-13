@@ -19,14 +19,10 @@ class Movie
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\ManyToOne(inversedBy: 'movies')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Director $director = null;
-
     #[ORM\Column]
     private ?int $running_time = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $cover_photo = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -38,13 +34,13 @@ class Movie
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
     private Collection $reviews;
 
-    #[ORM\OneToMany(mappedBy: 'movie', targetEntity: MovieActor::class)]
-    private Collection $movieActorRelations;
+    #[ORM\OneToMany(mappedBy: 'movie', targetEntity: MovieCrewMember::class)]
+    private Collection $crewRelations;
 
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
-        $this->movieActorRelations = new ArrayCollection();
+        $this->crewRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,18 +56,6 @@ class Movie
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getDirector(): ?Director
-    {
-        return $this->director;
-    }
-
-    public function setDirector(?Director $director): static
-    {
-        $this->director = $director;
 
         return $this;
     }
@@ -154,12 +138,25 @@ class Movie
         return $this;
     }
 
+    public function getDirector() : ?CrewMember
+    {
+        foreach($this->crewRelations as $relation)
+        {
+            if($relation->getCrewMember()->getRole() == 'director')
+            {
+                return $relation->getCrewMember();
+            }
+        }
+        return null;
+    }
+
     public function getActors(): array
     {
         $actors = [];
-        foreach($this->movieActorRelations as $relation)
+        foreach($this->crewRelations as $relation)
         {
-            $actors[] = $relation->getActor();
+            if($relation->getCrewMember()->getRole() == 'actor')
+                $actors[] = $relation->getCrewMember();
         }
         return $actors;
     }

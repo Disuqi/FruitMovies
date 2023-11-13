@@ -4,33 +4,30 @@ namespace App\Controller;
 
 
 use App\Repository\MovieRepository;
+use App\Utils\Search\OrderBy;
+use App\Utils\Search\SearchCategory;
+use App\Utils\Search\SearchOptions;
+use App\Utils\Search\SortOrder;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
-enum SearchCategory : string
-{
-    case Popular = "popular";
-    case TopRated = "top rated";
-    case Latest = "latest";
-    case Upcoming = "upcoming";
-    case All = "all";
-}
 
 class SearchController extends AbstractController
 {
-    #[Route('/search/{slug}', name:"search")]
+    #[Route('/search/{slug}/{page}', name:"search")]
     #[Template('search.html.twig')]
-    public function home(MovieRepository $movieRepository, string $slug) : array
+    public function search(MovieRepository $movieRepository, Request $request, string $slug, int $page = 1)
     {
-        $movies = match ($slug) {
-            SearchCategory::Popular->value => $movieRepository->getPopularMovies(),
-            SearchCategory::TopRated->value => $movieRepository->getTopRatedMovies(),
-            SearchCategory::Latest->value => $movieRepository->getLatestMovies(),
-            SearchCategory::Upcoming->value => $movieRepository->getUpcomingMovies(),
-            SearchCategory::All->value => $movieRepository->getAll(),
-            default => $movieRepository->searchMovie($slug),
+        $searchOptions = match ($slug) {
+            SearchCategory::Popular->value => new SearchOptions(OrderBy::Reviews, page: $page),
+            SearchCategory::TopRated->value => new SearchOptions(OrderBy::Rating, page: $page),
+            SearchCategory::Latest->value => new SearchOptions(OrderBy::ReleaseDate, startDate: new \DateTime('-2 months'), endDate: new \DateTime(), page: $page),
+            SearchCategory::Upcoming->value => new SearchOptions(OrderBy::ReleaseDate, orderSort: SortOrder::Ascending, startDate: new \DateTime( '+1 day'), page: $page),
+            SearchCategory::All->value => new SearchOptions(),
+            default => new SearchOptions(page: $page, searchQuery: $slug),
         };
+        $movies = $movieRepository->searchMovies($searchOptions);
         return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "movies" => $movies];
     }
 }

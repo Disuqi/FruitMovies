@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ActorRepository;
+use App\Repository\CrewMemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ActorRepository::class)]
-class Actor
+#[ORM\Entity(repositoryClass: CrewMemberRepository::class)]
+class CrewMember
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -16,8 +16,11 @@ class Actor
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $role = null;
 
     public function getId(): ?int
     {
@@ -41,9 +44,21 @@ class Actor
         return $this->image;
     }
 
-    public function setImage(string $image): static
+    public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
 
         return $this;
     }
