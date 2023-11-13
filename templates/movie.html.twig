@@ -4,7 +4,7 @@
     {{ include('components/header.html.twig') }}
     {% set director, actors, reviews =  movie.getDirector(), movie.getActors(), movie.getReviews() %}
     <div class="flex flex-row container mx-auto items-start justify-center mt-10">
-        <img class="w-80 mx-12" src="{{ baseImageUrl }}{{ movie.getCoverPhoto() }}" alt="{{ movie.getCoverPhoto() }} Cover Photo"/>
+        <img class="w-80 mx-12" src="{{ base_image_url }}{{ movie.getCoverPhoto() }}" alt="{{ movie.getCoverPhoto() }} Cover Photo"/>
         <div class="flex flex-col justify-start items-start gap-8">
             <div>
                 <h1 class="text-4xl font-bold mb-2">{{ movie.getTitle() }}</h1>
@@ -15,7 +15,7 @@
                     <div class="flex flex-col justify-start gap-2">
                         <h2 class="text-2xl font-bold">Director</h2>
                         <div>
-                            <img class="h-60 w-40" src="{{ baseImageUrl }}{{ director.getImage() }}" alt="{{ director.getName() }} Photo"/>
+                            <img class="h-60 w-40" src="{{ base_image_url }}{{ director.getImage() }}" alt="{{ director.getName() }} Photo"/>
                             <h3 class="font-medium">{{ director.getName() }}</h3>
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                             {% for actor in actors %}
                                 <div class="flex flex-col justify-center">
                                     <div class="h-60 w-40">
-                                        <img src="{{ baseImageUrl }}{{ actor.getImage() }}" alt="{{ actor.getName() }} Photo"/>
+                                        <img src="{{ base_image_url }}{{ actor.getImage() }}" alt="{{ actor.getName() }} Photo"/>
                                     </div>
                                     <h3 class="font-medium">{{ actor.getName() }}</h3>
                                 </div>

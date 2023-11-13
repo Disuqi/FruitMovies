@@ -13,12 +13,17 @@ class SignInController extends AbstractController
 {
     #[Route('/signIn', name: 'signIn')]
     #[Template('authentication/signIn.html.twig')]
-    public function index(AuthenticationUtils $authenticationUtils): array
+    public function signIn(AuthenticationUtils $authenticationUtils): array
     {
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return [ 'last_username' => $lastUsername,
             'error' => $error,];
+    }
+
+    #[Route('/signOut', name: 'signOut', methods: ['GET'])]
+    public function signOut() : void
+    {
     }
 }

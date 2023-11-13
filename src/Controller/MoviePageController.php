@@ -17,6 +17,6 @@ class MoviePageController extends AbstractController
     public function movie(ReviewRepository $reviewRepository, Movie $movie) : array
     {
         $reviews = $reviewRepository->findBy(["movie" => $movie]);
-        return ["baseImageUrl" => MovieRepository::BASE_IMAGE_URL, "movie" => $movie, "reviews" => $reviews];
+        return ["movie" => $movie, "reviews" => $reviews];
     }
 }

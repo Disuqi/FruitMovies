@@ -21,6 +21,9 @@ security:
                 check_path: signIn
                 failure_path: signIn
             login_throttling: null
+            logout:
+                path: signOut
+                target: home
 
         secured_area:
             form_login:

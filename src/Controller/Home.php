@@ -19,6 +19,6 @@ class Home extends AbstractController
         $juiciestPicks = $movieRepository->searchMovies($options)->results;
         $movieOfTheMonth = array_shift($juiciestPicks);
 
-        return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "pickOfTheMonth" => $movieOfTheMonth, "juiciestPicks" => $juiciestPicks];
+        return ["pickOfTheMonth" => $movieOfTheMonth, "juiciestPicks" => $juiciestPicks];
     }
 }

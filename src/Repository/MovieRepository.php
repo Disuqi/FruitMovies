@@ -13,7 +13,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class MovieRepository extends ServiceEntityRepository
 {
-    public const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w1280/";
     public const PAGE_SIZE = 18;
     private const AVERAGE_RATING_NAME = 'average_rating';
     private const REVIEW_COUNT_NAME = 'review_count';
@@ -31,7 +30,7 @@ class MovieRepository extends ServiceEntityRepository
         $this->queryOrderBy($qb, $options->orderBy, $options->sortOrder);
         $this->queryOrderBy($qb, $options->additionalOrderBy, $options->additionalSortOrder);
         $this->setQueryDateRange($qb, $options->startDate, $options->endDate);
-        $this->joinReviewTableIfNeeded($qb);
+        $joinedReview = $this->joinReviewTableIfNeeded($qb);
         if($options->searchQuery != null)
         {
             $qb->where('m.title LIKE :searchTerm')
@@ -39,8 +38,10 @@ class MovieRepository extends ServiceEntityRepository
         }
 
         $countQb = $this->createQueryBuilder('m');
-        $countQb->select('COUNT(m.id)');
-        $this->setQueryDateRange($qb, $options->startDate, $options->endDate);
+        $countQb->select('COUNT(DISTINCT m.id)');
+        if($joinedReview)
+            $countQb->innerJoin('m.reviews', self::REVIEW_TABLE_ALIAS);
+        $this->setQueryDateRange($countQb, $options->startDate, $options->endDate);
         $totalCount = $countQb->getQuery()->getSingleScalarResult();
         $totalPages = ceil($totalCount/self::PAGE_SIZE);
 
@@ -107,13 +108,15 @@ class MovieRepository extends ServiceEntityRepository
         }
     }
 
-    private function joinReviewTableIfNeeded(QueryBuilder $qb)
+    private function joinReviewTableIfNeeded(QueryBuilder $qb) : bool
     {
         $dql = $qb->getDQL();
         if(str_contains($dql, self::REVIEW_TABLE_ALIAS . '.'))
         {
             $qb->join('m.reviews', self::REVIEW_TABLE_ALIAS)
                 ->groupBy('m');
+            return true;
         }
+        return false;
     }
 }
