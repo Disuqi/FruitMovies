@@ -24,10 +24,10 @@ class SearchController extends AbstractController
             SearchCategory::TopRated->value => new SearchOptions(OrderBy::Rating, page: $page),
             SearchCategory::Latest->value => new SearchOptions(OrderBy::ReleaseDate, startDate: new \DateTime('-2 months'), endDate: new \DateTime(), page: $page),
             SearchCategory::Upcoming->value => new SearchOptions(OrderBy::ReleaseDate, orderSort: SortOrder::Ascending, startDate: new \DateTime( '+1 day'), page: $page),
-            SearchCategory::All->value => new SearchOptions(),
+            SearchCategory::All->value => new SearchOptions(OrderBy::Title),
             default => new SearchOptions(page: $page, searchQuery: $slug),
         };
-        $movies = $movieRepository->searchMovies($searchOptions);
-        return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "movies" => $movies];
+        $searchResult = $movieRepository->searchMovies($searchOptions);
+        return ["baseImageUrl"=> MovieRepository::BASE_IMAGE_URL, "movies" => $searchResult->results, "current_page" => $searchResult->current_page, "total_pages" => $searchResult->total_pages];
     }
 }
