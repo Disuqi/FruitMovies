@@ -33,14 +33,14 @@ class SignUpController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+            $request['plainPassword'] = $form->get('plainPassword')->getData();
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )
             );
-
+            $user->setDateJoined(new \DateTimeImmutable());
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -58,7 +58,7 @@ class SignUpController extends AbstractController
         }
 
         return $this->render('authentication/signUp.html.twig',
-            ['registrationForm' => $form->createView(),]);
+            ['form' => $form->createView(),]);
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
