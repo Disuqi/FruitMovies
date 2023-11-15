@@ -31,17 +31,21 @@ class MovieRepository extends ServiceEntityRepository
         $this->queryOrderBy($qb, $options->additionalOrderBy, $options->additionalSortOrder);
         $this->setQueryDateRange($qb, $options->startDate, $options->endDate);
         $joinedReview = $this->joinReviewTableIfNeeded($qb);
-        if($options->searchQuery != null)
-        {
-            $qb->where('m.title LIKE :searchTerm')
-            ->setParameter('searchTerm', '%' . $options->searchQuery . '%');
-        }
 
         $countQb = $this->createQueryBuilder('m');
         $countQb->select('COUNT(DISTINCT m.id)');
+        $this->setQueryDateRange($countQb, $options->startDate, $options->endDate);
         if($joinedReview)
             $countQb->innerJoin('m.reviews', self::REVIEW_TABLE_ALIAS);
-        $this->setQueryDateRange($countQb, $options->startDate, $options->endDate);
+        if($options->searchQuery != null)
+        {
+            $qb->where('m.title LIKE :searchTerm')
+                ->setParameter('searchTerm', '%' . $options->searchQuery . '%');
+            $countQb->where('m.title LIKE :searchTerm')
+                ->setParameter('searchTerm', '%' . $options->searchQuery . '%');
+        }
+
+
         $totalCount = $countQb->getQuery()->getSingleScalarResult();
         $totalPages = ceil($totalCount/self::PAGE_SIZE);
 

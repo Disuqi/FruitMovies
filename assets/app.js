@@ -9,9 +9,10 @@
 import './styles/app.css';
 import 'flowbite';
 
-function previewImage() {
-    console.log("HERE")
-    const file = document.getElementById("profilePhoto").files[0];
+function previewImage(fileElementId)
+{
+    console.log("HERE: " + fileElementId)
+    const file = document.getElementById(fileElementId).files[0];
     const label = document.getElementById("profilePhotoLabel");
     const reader = new FileReader();
 

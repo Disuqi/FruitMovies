@@ -7,7 +7,10 @@
         <img class="w-80 mx-12" src="{{ base_image_url }}{{ movie.getCoverPhoto() }}" alt="{{ movie.getCoverPhoto() }} Cover Photo"/>
         <div class="flex flex-col justify-start items-start gap-8">
             <div>
-                <h1 class="text-4xl font-bold mb-2">{{ movie.getTitle() }}</h1>
+                <div class="mb-2">
+                    <h1 class="text-4xl font-bold">{{ movie.getTitle() }}</h1>
+                    <h3 class="ml-auto font-semibold">{{ movie.getReleaseDate().format("d-m-Y") }}</h3>
+                </div>
                 <p class="text-xl">{{ movie.getOverview() }}</p>
             </div>
             <div class="flex flex-row gap-6">
@@ -26,8 +29,14 @@
                         <div class="flex flex-row justify-start items-start gap-2 overflow-x-auto w-[55rem]">
                             {% for actor in actors %}
                                 <div class="flex flex-col justify-center">
-                                    <div class="h-60 w-40">
-                                        <img src="{{ base_image_url }}{{ actor.getImage() }}" alt="{{ actor.getName() }} Photo"/>
+                                    <div class="h-60 w-40 flex justify-center items-center">
+                                        {% if actor.getImage() %}
+                                            <img src="{{ base_image_url }}{{ actor.getImage() }}" alt="{{ actor.getName() }} Photo"/>
+                                        {% else %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-full" viewBox="0 0 16 16">
+                                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                            </svg>
+                                        {% endif %}
                                     </div>
                                     <h3 class="font-medium">{{ actor.getName() }}</h3>
                                 </div>
@@ -64,7 +73,7 @@
                                                 </svg>
                                             {% endif %}
                                         {% endfor %}
-                                        <h1 class="mx-2">RATING: {{ review.getScore() }}/10</h1>
+                                        <h1 class="mx-2 font-black">{{ review.getScore() }} / 10</h1>
                                     </div>
                                     <div class="ml-auto flex flex-row gap-2 m-1 items-center">
                                         <h3 class="text-xl">@{{ review.getUser().getUsername() }}</h3>
@@ -79,6 +88,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
+
                                         <p>32</p>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

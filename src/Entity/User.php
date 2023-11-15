@@ -48,9 +48,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Review::class)]
     private Collection $reviews;
 
-    #[ORM\Column(type: 'boolean')]
-    private bool $isVerified = false;
-
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
@@ -169,7 +166,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
     }
 
     public function getUserIdentifier(): string
@@ -177,15 +173,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function isVerified(): bool
+    public function getImagesDirectoryPath(): string
     {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
-
-        return $this;
+        return "userData/" . $this->id . "/images/";
     }
 }
