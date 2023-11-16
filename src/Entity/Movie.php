@@ -108,6 +108,10 @@ class Movie
         return $this;
     }
 
+    public function hasReleased(): bool
+    {
+        return $this->release_date < new \DateTimeImmutable();
+    }
     /**
      * @return Collection<int, Review>
      */
