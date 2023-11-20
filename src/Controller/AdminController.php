@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Movie;
+use App\Form\AddMovieFormType;
 use App\Repository\MovieRepository;
 use App\Utils\Search\OrderBy;
 use App\Utils\Search\SearchOptions;
@@ -11,10 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
 {
-    #[Route('/admin', name:"admin")]
-    #[Template('admin.html.twig')]
+    #[Route("/admin", name:"admin")]
+    #[Template("profile/admin.html.twig")]
     public function home(MovieRepository $movieRepository) : array
     {
-        return [];
+        $movie = new Movie();
+        $addMovieForm = $this->createForm(AddMovieFormType::class, $movie);
+
+        return ["addMovieForm" => $addMovieForm];
     }
 }

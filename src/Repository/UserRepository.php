@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Utils\Search\SearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,33 +18,30 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UserRepository extends ServiceEntityRepository
 {
+    public const PAGE_SIZE = 20;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findByUsername(string $username, int $page = 0) : SearchResult
+    {
+        $qb = $this->createQueryBuilder("u")
+            ->where("u.username LIKE :username")
+            ->setParameter("username", "%".$username."%");
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $countQb = clone $qb;
+        $countQb->select("COUNT(DISTINCT u.id)");
+        $totalCount = $countQb->getQuery()->getSingleScalarResult();
+        $totalPages = ceil($totalCount/self::PAGE_SIZE);
+
+        if($page > 0)
+        {
+            $qb->setFirstResult(($page - 1) * self::PAGE_SIZE)
+                ->setMaxResults(self::PAGE_SIZE);
+        }
+        $results =  $qb->getQuery()->getResult();
+        return new SearchResult($results, $page, $totalPages);
+    }
 }

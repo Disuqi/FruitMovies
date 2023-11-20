@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CrewMemberRepository;
+use App\Utils\PhotoSize;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CrewMemberRepository::class)]
@@ -17,7 +18,7 @@ class CrewMember
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
+    private ?string $photo = null;
 
     #[ORM\Column(length: 255)]
     private ?string $role = null;
@@ -39,14 +40,15 @@ class CrewMember
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getPhoto(PhotoSize $size = PhotoSize::Medium): ?string
     {
-        return $this->image;
+        if(!$this->photo) return null;
+        return $size->value . $this->photo;
     }
 
-    public function setImage(?string $image): static
+    public function setPhoto(?string $photo): static
     {
-        $this->image = $image;
+        $this->photo = $photo;
 
         return $this;
     }

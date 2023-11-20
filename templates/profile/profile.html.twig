@@ -1,0 +1,32 @@
+{% extends 'components/base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+{% block body %}
+    {{ include('components/header.html.twig') }}
+    <div class="w-screen bg-cover flex items-center justify-center" style="background-image: url('{{ asset('assets/FruitsPattern.png') }}')">
+        <div class="bg-gray-900 border-2 border-gray-800 rounded-xl flex flex-col items-center justify-center gap-8 p-12 my-64">
+            <div class="flex flex-row items-center justify-center gap-8">
+                <div class="w-60">
+                    {% include 'elements/userImage.html.twig' with { 'image' : app.user.getProfileImage() } %}
+                </div>
+                <div class="flex flex-col gap-2 text-2xl">
+                    <div class="flex flex-row gap-12  items-center justify-start">
+                        <h1>{{ app.user.getMainRole() }}</h1>
+                    </div>
+                    <div class="flex flex-row gap-12 items-center">
+                        <p>@{{ app.user.username }}</p>
+                        <h1 class="font-light text-gray-400 ml-auto">Username</h1>
+                    </div>
+                    <div class="flex flex-row gap-12  items-center">
+                        <p>{{ app.user.email }}</p>
+                        <h1 class="text-gray-400 font-light ml-auto">Email</h1>
+                    </div>
+                    <a  href="{{ path('reviews') }}" class="flex flex-row gap-12  items-center">
+                        <p>{{ app.user.getReviews() | length }}</p>
+                        <h1 class="text-gray-400 font-light ml-auto">Reviews</h1>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

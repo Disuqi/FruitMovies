@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\SearchFormType;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,9 +10,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserProfileController extends AbstractController
 {
     #[Route('/profile', name: "profile")]
-    #[Template('profile.html.twig')]
+    #[Template('profile/profile.html.twig')]
     public function profile() : array
     {
-        return [];
+        $searchForm = $this->createForm(SearchFormType::class);
+        return ["search_form"=>$searchForm];
     }
 }

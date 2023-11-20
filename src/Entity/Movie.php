@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\MovieRepository;
+use App\Utils\PhotoSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\PseudoTypes\PositiveInteger;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
 class Movie
@@ -72,9 +74,16 @@ class Movie
         return $this;
     }
 
-    public function getCoverPhoto(): ?string
+    public function getImagesDirectoryPath() : string
     {
-        return $this->cover_photo;
+        return "movieData/" . $this->id . "/images/";
+    }
+
+    public function getCoverPhoto(PhotoSize $size = PhotoSize::Medium): ?string
+    {
+        if(!$this->cover_photo) return null;
+        if($this->cover_photo[0] !== '/') return '/' . $this->cover_photo;
+        return $size->value . $this->cover_photo;
     }
 
     public function setCoverPhoto(string $cover_photo): static

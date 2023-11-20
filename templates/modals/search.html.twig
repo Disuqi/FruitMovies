@@ -1,22 +1,22 @@
 <div id="search-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 md:inset-0 text-black w-screen h-screen">
-    <form class="absolute top-6 w-full max-w-2xl max-h-full bg-white rounded-xl flex flex-row p-4 align-middle" method="get" action="" onsubmit="return redirectToSearch()">
-        <label class="m-1 text-gray-400" for="searchBox">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-        </label>
-        <input class="border-0 outline-none p-0 ring-0 focus:ring-0 focus:border-0 m-1" type="text" placeholder="Search..." id="searchBox"/>
-    </form>
+    <div class="absolute top-6 w-full max-w-[80vw] max-h-full flex flex-row items-center justify-center align-middle">
+        {{ form_start(search_form, {'attr': {'action': path('search')}}) }}
+        <div class="flex flex-row p-4 items-center justify-center align-middle gap-4">
+            <label class="bg-white rounded-xl flex flex-row items-center gap-2 p-4 w-[30vw] m-1 text-gray-400 cursor-pointer" for="{{ search_form.search_box.vars.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                {{ form_widget(search_form.search_box, {'attr': {'class' : 'border-0 outline-none p-0 ring-0 focus:ring-0 focus:border-0 m-1 text-black', 'placeholder': 'Search...'}}) }}
+            </label>
+            <div class="flex flex-row align-middle items-center justify-center text-white font-semibold gap-2">
+                {% for option in search_form.search_options %}
+                    <div class="flex items-center justify-center gap-2">
+                        {{ form_widget(option, {'attr': {'class' : 'cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2' }}) }}
+                        {{ form_label(option) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {{ form_end(search_form) }}
+    </div>
 </div>
-<script>
-    function redirectToSearch()
-    {
-        let searchTerm = document.getElementById('searchBox').value.trim();
-        if(searchTerm)
-        {
-            searchTerm = encodeURIComponent(searchTerm);
-            window.location.href = '/search/' + searchTerm;
-        }
-        return false;
-    }
-</script>

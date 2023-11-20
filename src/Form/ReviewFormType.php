@@ -16,21 +16,23 @@ class ReviewFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('score', IntegerType::class,
+            ->add("score", IntegerType::class,
                 [
-                    'attr' => ['min' => 1, 'max' => 10]
-                ], )
-            ->add('comment', TextareaType::class, [
-                'attr' => ['rows' => 5],
+                    "attr" => ["min" => 0, "max" => 10, "value"=>$options["score"]]
+                ])
+            ->add("comment", TextareaType::class, [
+                "data" => $options["comment"],
+                "attr" => ["rows" => 5]
             ])
-            ->add('submit', SubmitType::class);
-        ;
+            ->add("submit", SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Review::class,
+            "data_class" => Review::class,
+            "score" => "",
+            "comment"=> "",
         ]);
     }
 }

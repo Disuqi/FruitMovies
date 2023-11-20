@@ -40,17 +40,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private \DateTimeImmutable $date_joined;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $profile_photo = null;
+    private ?string $profile_image = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Review::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Review::class)]
     private Collection $reviews;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ReviewVote::class)]
+    private Collection $votedReviews;
 
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
+        $this->votedReviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,14 +110,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getProfilePhoto(): ?string
+    public function getProfileImage(): ?string
     {
-        return $this->profile_photo;
+        return $this->profile_image;
     }
 
-    public function setProfilePhoto(string $profile_photo): static
+    public function setProfileImage(string $profile_image): static
     {
-        $this->profile_photo = $profile_photo;
+        $this->profile_image = $profile_image;
 
         return $this;
     }
@@ -134,6 +138,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getMainRole() : string
+    {
+        if(in_array('ROLE_SUPER_ADMIN', $this->roles))
+        {
+            return "Super Admin";
+        }
+        if(in_array('ROLE_ADMIN', $this->roles))
+        {
+            return "Admin";
+        }
+        return "Normal User";
+    }
     /**
      * @return Collection<int, Review>
      */
@@ -164,6 +180,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function hasReviewedMovie(int $movieId) : bool
+    {
+        foreach($this->reviews as $review)
+        {
+            if($review->getMovie()->getId() === $movieId)
+                return true;
+        }
+        return false;
+    }
+
     public function eraseCredentials()
     {
     }
@@ -176,5 +202,55 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getImagesDirectoryPath(): string
     {
         return "userData/" . $this->id . "/images/";
+    }
+
+    public function getVotedReviews(): Collection
+    {
+        return $this->votedReviews;
+    }
+
+    public function getLikedReviews() : Collection
+    {
+        return $this->votedReviews->filter(function (ReviewVote $reviewVote) {
+            return $reviewVote->isLiked();
+        });
+    }
+
+    public function getDislikedReviews() : Collection
+    {
+        return $this->votedReviews->filter(function (ReviewVote $reviewVote) {
+            return !$reviewVote->isLiked();
+        });
+    }
+
+    public function getReviewVote(int $reviewId) : ?ReviewVote
+    {
+        foreach($this->votedReviews as $vote)
+        {
+            if($vote->getReview()->getId() === $reviewId)
+            {
+                return $vote;
+            }
+        }
+        return null;
+    }
+
+    public function addReviewVote(ReviewVote $reviewVote): static
+    {
+        if (!$this->votedReviews->contains($reviewVote)) {
+            $this->votedReviews->add($reviewVote);
+            $reviewVote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReviewVote(ReviewVote $reviewVote): static
+    {
+        if ($this->votedReviews->removeElement($reviewVote)) {
+            $reviewVote->setUser(null);
+        }
+
+        return $this;
     }
 }

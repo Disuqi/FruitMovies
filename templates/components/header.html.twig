@@ -1,10 +1,10 @@
 <header class="w-screen flex flex-row items-center py-2 container mx-auto">
     <a href="{{ path('home') }}" class="font-black py-2 text-3xl">FILM FRUITS</a>
     <nav class="flex justify-center items-center font-normal ml-auto text-xl gap-20">
-        <a href="{{ path('search', {slug: 'popular', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Popular</a>
-        <a href="{{ path('search', {slug: 'top rated', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Top Rated</a>
-        <a href="{{ path('search', {slug: 'latest', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Latest</a>
-        <a href="{{ path('search', {slug: 'upcoming', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Upcoming</a>
+        <a href="{{ path('searchMovie', {slug: 'popular', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Popular</a>
+        <a href="{{ path('searchMovie', {slug: 'top rated', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Top Rated</a>
+        <a href="{{ path('searchMovie', {slug: 'latest', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Latest</a>
+        <a href="{{ path('searchMovie', {slug: 'upcoming', page: 1}) }}" class="hover:text-indigo-400 transition duration-100 ease-in-out">Upcoming</a>
         <button data-modal-target="search-modal" data-modal-toggle="search-modal" type="button" class="hover:text-indigo-400 transition duration-100 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -12,18 +12,10 @@
         </button>
         {% if is_granted('IS_AUTHENTICATED') %}
             {% set username = app.user.username %}
-            {% set profile_photo = app.user.getProfilePhoto() %}
             <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName" class="flex items-center text-xl pe-1 font-medium text-white rounded-full transition ease-in-out duration-100 hover:text-indigo-400" type="button">
-                {% if profile_photo %}
-                    <img src="{{ asset(profile_photo) }}" class="w-12 h-12 border-2 border-gray-800 me-2 rounded-full" alt="user photo"/>
-                {% else %}
-                    <div class="w-12 h-12 me-2 rounded-full flex justify-center items-center border-2 border-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                        </svg>
-                    </div>
-                {% endif %}
-                @{{ username }}
+                <span class="w-12 h-12">
+                    {% include 'elements/NoProfileImage.html.twig' with {'user': app.user, 'width': 'full', 'height': 'full' } %}
+                </span>
                 <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                 </svg>
@@ -36,20 +28,24 @@
 {{ include('modals/search.html.twig') }}
 {% if is_granted('IS_AUTHENTICATED') %}
 <div id="dropdownAvatarName" class="z-10 hidden bg-gray-900 divide-y divide-gray-500 rounded-lg shadow w-44">
-    <div class="px-4 py-3 text-sm">
-        <div class="font-medium ">{{ app.user.getRoles()[0] }}</div>
-        <div class="truncate">{{ app.user.email }}</div>
+    <div class="px-4 py-3 text-md">
+        <div class="font-medium">@{{ username }}</div>
     </div>
     <ul class="py-2 text-sm" aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
         <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-800">Dashboard</a>
+            <a href="{{ path('profile') }}" class="block px-4 py-2 hover:bg-gray-800">Profile</a>
         </li>
         <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-800">Settings</a>
+            <a href="{{ path('reviews') }}" class="block px-4 py-2 hover:bg-gray-800">Your Reviews</a>
         </li>
         <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-800">Earnings</a>
+            <a href="#" class="block px-4 py-2 hover:bg-gray-800">Liked Reviews</a>
         </li>
+        {% if is_granted("ROLE_ADMIN") %}
+            <li>
+                <a href="{{ path('admin') }}" class="block px-4 py-2 hover:bg-gray-800">Admin Dashboard</a>
+            </li>
+        {% endif %}
     </ul>
     <div class="py-2">
         <a href="{{ path("signOut") }}" class="block px-4 py-2 text-sm hover:bg-gray-800">Sign out</a>

@@ -37,12 +37,20 @@ security:
 
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/addMovie, roles: ROLE_ADMIN }
          - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/reviews, roles: ROLE_USER }
+         - { path: ^/addReview, roles: ROLE_USER }
+         - { path: ^/editReview, roles: ROLE_USER }
+         - { path: ^/deleteReview, roles: ROLE_USER }
+         - { path: ^/vote, roles: ROLE_USER }
+
+
 
 when@test:
     security:

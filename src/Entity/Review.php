@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ReviewRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,14 @@ class Review
 
     #[ORM\Column]
     private ?\DateTimeImmutable $date_reviewed = null;
+
+    #[ORM\OneToMany(mappedBy: "review", targetEntity: ReviewVote::class)]
+    private Collection $reviewVotes;
+
+    public function __construct()
+    {
+        $this->reviewVotes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -94,6 +104,46 @@ class Review
     {
         $this->date_reviewed = $date_reviewed;
 
+        return $this;
+    }
+
+    public function getReviewVotes(): Collection
+    {
+        return $this->reviewVotes;
+    }
+
+    public function getLikesCount() : int
+    {
+        $likes = $this->reviewVotes->filter(function (ReviewVote $reviewVote) {
+            return $reviewVote->isLiked();
+        });
+        return count($likes);
+    }
+
+    public function getDislikesCount() : int
+    {
+        $dislikes = $this->reviewVotes->filter(function (ReviewVote $reviewVote) {
+            return !$reviewVote->isLiked();
+        });
+        return count($dislikes);
+    }
+
+    public function addReviewVote(ReviewVote $reviewVote): static
+    {
+        if (!$this->reviewVotes->contains($reviewVote)) {
+            $this->reviewVotes->add($reviewVote);
+            $reviewVote->setReview($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReviewVote(ReviewVote $reviewVote): static
+    {
+        if($this->reviewVotes->removeElement($reviewVote))
+        {
+            $reviewVote->setReview(null);
+        }
         return $this;
     }
 }

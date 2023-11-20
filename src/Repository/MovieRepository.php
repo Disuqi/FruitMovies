@@ -14,9 +14,9 @@ use Doctrine\Persistence\ManagerRegistry;
 class MovieRepository extends ServiceEntityRepository
 {
     public const PAGE_SIZE = 18;
-    private const AVERAGE_RATING_NAME = 'average_rating';
-    private const REVIEW_COUNT_NAME = 'review_count';
-    private const REVIEW_TABLE_ALIAS = 'r';
+    private const AVERAGE_RATING_NAME = "average_rating";
+    private const REVIEW_COUNT_NAME = "review_count";
+    private const REVIEW_TABLE_ALIAS = "r";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -25,29 +25,34 @@ class MovieRepository extends ServiceEntityRepository
 
     public function searchMovies(SearchOptions $options)
     {
-        $qb = $this->createQueryBuilder('m');
+        $qb = $this->createQueryBuilder("m");
         $qb->select("m");
         $this->queryOrderBy($qb, $options->orderBy, $options->sortOrder);
         $this->queryOrderBy($qb, $options->additionalOrderBy, $options->additionalSortOrder);
         $this->setQueryDateRange($qb, $options->startDate, $options->endDate);
         $joinedReview = $this->joinReviewTableIfNeeded($qb);
 
-        $countQb = $this->createQueryBuilder('m');
-        $countQb->select('COUNT(DISTINCT m.id)');
+        $countQb = $this->createQueryBuilder("m");
+        $countQb->select("COUNT(DISTINCT m.id)");
         $this->setQueryDateRange($countQb, $options->startDate, $options->endDate);
         if($joinedReview)
-            $countQb->innerJoin('m.reviews', self::REVIEW_TABLE_ALIAS);
+            $countQb->innerJoin("m.reviews", self::REVIEW_TABLE_ALIAS);
         if($options->searchQuery != null)
         {
-            $qb->where('m.title LIKE :searchTerm')
-                ->setParameter('searchTerm', '%' . $options->searchQuery . '%');
-            $countQb->where('m.title LIKE :searchTerm')
-                ->setParameter('searchTerm', '%' . $options->searchQuery . '%');
+            $qb->where("m.title LIKE :searchTerm")
+                ->setParameter("searchTerm", "%" . $options->searchQuery . "%");
+            $countQb->where("m.title LIKE :searchTerm")
+                ->setParameter("searchTerm", "%" . $options->searchQuery . "%");
         }
 
 
         $totalCount = $countQb->getQuery()->getSingleScalarResult();
         $totalPages = ceil($totalCount/self::PAGE_SIZE);
+
+        if($totalPages == 0)
+        {
+            return new SearchResult([], 0, 0);
+        }
 
         if($options->page > $totalPages)
         {
@@ -76,17 +81,17 @@ class MovieRepository extends ServiceEntityRepository
         switch($orderBy)
         {
             case OrderBy::Title:
-                $qb->addOrderBy('m.title', $sortOrder->value);
+                $qb->addOrderBy("m.title", $sortOrder->value);
                 break;
             case OrderBy::Rating:
-                $qb->addSelect('AVG('. self::REVIEW_TABLE_ALIAS .'.score) as ' . self::AVERAGE_RATING_NAME)
+                $qb->addSelect("AVG(". self::REVIEW_TABLE_ALIAS .".score) as " . self::AVERAGE_RATING_NAME)
                     ->addOrderBy(self::AVERAGE_RATING_NAME, $sortOrder->value);
                 break;
             case OrderBy::ReleaseDate:
-                $qb->addOrderBy('m.release_date', $sortOrder->value);
+                $qb->addOrderBy("m.release_date", $sortOrder->value);
                 break;
             case OrderBy::Reviews:
-                $qb->addSelect('COUNT('. self::REVIEW_TABLE_ALIAS .'.id) as ' . self::REVIEW_COUNT_NAME)
+                $qb->addSelect("COUNT(". self::REVIEW_TABLE_ALIAS .".id) as " . self::REVIEW_COUNT_NAME)
                     ->addOrderBy(self::REVIEW_COUNT_NAME, $sortOrder->value);
                 break;
         }
@@ -96,29 +101,29 @@ class MovieRepository extends ServiceEntityRepository
     {
         if($startDate != null && $endDate != null)
         {
-            $qb->where('m.release_date BETWEEN :start AND :end')
-                ->setParameter('start', $startDate)
-                ->setParameter('end', $endDate);
+            $qb->where("m.release_date BETWEEN :start AND :end")
+                ->setParameter("start", $startDate)
+                ->setParameter("end", $endDate);
         }
         else if($startDate != null && $endDate == null)
         {
-            $qb->where('m.release_date > :start')
-                ->setParameter('start', $startDate);
+            $qb->where("m.release_date > :start")
+                ->setParameter("start", $startDate);
         }
         else if($startDate == null && $endDate != null)
         {
-            $qb->where('m.release_date < :end')
-                ->setParameter('end', $endDate);
+            $qb->where("m.release_date < :end")
+                ->setParameter("end", $endDate);
         }
     }
 
     private function joinReviewTableIfNeeded(QueryBuilder $qb) : bool
     {
         $dql = $qb->getDQL();
-        if(str_contains($dql, self::REVIEW_TABLE_ALIAS . '.'))
+        if(str_contains($dql, self::REVIEW_TABLE_ALIAS . "."))
         {
-            $qb->join('m.reviews', self::REVIEW_TABLE_ALIAS)
-                ->groupBy('m');
+            $qb->join("m.reviews", self::REVIEW_TABLE_ALIAS)
+                ->groupBy("m");
             return true;
         }
         return false;
