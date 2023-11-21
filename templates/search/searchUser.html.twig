@@ -26,9 +26,9 @@
         <div id="moviesContainer" class="flex flex-row flex-wrap justify-center items-center gap-2">
             {% for user in users %}
                 {% set profile_image = user.getProfileImage() %}
-                <a href="#" class="flex flex-row justify-center align-middle items-center p-5 border border-gray-800 bg-gray-900 rounded-md w-[22rem]">
+                <a href="{{ path('user', {'username' : user.username}) }}" class="flex flex-row justify-center align-middle items-center p-5 border border-gray-800 bg-gray-900 rounded-md w-[22rem]">
                     <div>
-                        {% include 'elements/NoProfileImage.html.twig' with {'width': 14, 'height': 14 } %}
+                        {% include 'elements/userProfileImage.html.twig' with {'width': 14, 'height': 14 } %}
                     </div>
                     <div class="flex flex-col gap-2 w-[80%] m-2">
                         <h1 class="text-xl font-medium ml-auto text truncate">@{{ user.getUsername() }}</h1>

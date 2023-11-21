@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Controller;
-
+namespace App\Controller\Pages;
 
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
@@ -10,37 +9,16 @@ use App\Utils\Search\OrderBy;
 use App\Utils\Search\SearchCategory;
 use App\Utils\Search\SearchOptions;
 use App\Utils\Search\SortOrder;
-use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SearchController extends AbstractController
+class SearchPages extends AbstractController
 {
-    #[Route("/search", name: "search")]
-    public function search(Request $request, MovieRepository $movieRepository, UserRepository $userRepository, LoggerInterface $logger) : Response
-    {
-        $searchForm = $this->createForm(SearchFormType::class);
-        $searchForm->handleRequest($request);
-        if($searchForm->isSubmitted() && $searchForm->isValid())
-        {
-            $formData = $searchForm->getData();
-            $slug = $formData["search_box"];
-            $searchType = $formData["search_options"];
-            $logger->info("SERCH TYPE: ". $searchType);
-            if($searchType === "movie")
-                return $this->searchMovie($movieRepository, $slug);
-            else
-                return $this->searchUser($userRepository, $slug);
-        }
-        return $this->redirectToRoute("home");
-    }
-
     #[Route("/search/movie/{slug}/{page}", name:"searchMovie")]
-    public function searchMovie(MovieRepository $movieRepository, string $slug, int $page = 1) : Response
+    #[Template("search/searchMovie.html.twig")]
+    public function searchMovie(MovieRepository $movieRepository, string $slug, int $page = 1) : array
     {
         $searchOptions = match ($slug) {
             SearchCategory::Popular->value => new SearchOptions(OrderBy::Reviews, page: $page),
@@ -52,29 +30,31 @@ class SearchController extends AbstractController
         };
         $searchResult = $movieRepository->searchMovies($searchOptions);
         $searchForm = $this->createForm(SearchFormType::class);
-        return $this->render("search/searchMovie.html.twig", 
+        return
             [
-                "movies" => $searchResult->results, 
-                "current_page" => $searchResult->current_page, 
+                "movies" => $searchResult->results,
+                "current_page" => $searchResult->current_page,
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
                 "search_form" => $searchForm
-            ]);
+            ];
     }
 
     #[Route("/search/user/{slug}/{page}", name:"searchUser")]
-    public function searchUser(UserRepository $userRepository, string $slug, int $page = 1) : Response
+    #[Template("search/searchUser.html.twig")]
+    public function searchUser(UserRepository $userRepository, string $slug, int $page = 1) : array
     {
         if($slug[0] == "@")
             $slug = substr($slug, 1);
         $searchResult = $userRepository->findByUsername($slug, $page);
         $searchForm = $this->createForm(SearchFormType::class);
-        return $this->render("search/searchUser.html.twig",
+        return
             [
                 "users" => $searchResult->results,
                 "current_page" => $searchResult->current_page,
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
-                "search_form" => $searchForm]);
+                "search_form" => $searchForm
+            ];
     }
 }

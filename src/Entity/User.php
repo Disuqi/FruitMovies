@@ -180,14 +180,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function hasReviewedMovie(int $movieId) : bool
+    public function getReviewForMovie(int $movieId) : ?Review
     {
         foreach($this->reviews as $review)
         {
             if($review->getMovie()->getId() === $movieId)
-                return true;
+                return $review;
         }
-        return false;
+        return null;
     }
 
     public function eraseCredentials()

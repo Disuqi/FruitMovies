@@ -1,23 +1,17 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Pages;
 
 
 use App\Entity\Movie;
-use App\Entity\Review;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
-use App\Repository\ReviewRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MoviePageController extends AbstractController
+class MoviePage extends AbstractController
 {
     #[Route("/movie/{id}", name:"movie")]
     #[Template("movie.html.twig")]
@@ -50,6 +44,6 @@ class MoviePageController extends AbstractController
         });
         $reviews = new ArrayCollection($reviews);
         $searchForm = $this->createForm(SearchFormType::class);
-        return ["movie" => $movie, "reviews" => $reviews, "addReviewForm" => $addReviewForm->createView(), "editReviewForm" => $editReviewForm->createView(), "search_form" => $searchForm];
+        return ["movie" => $movie, "reviews" => $reviews, "addReviewForm" => $addReviewForm->createView(), "edit_review_form" => $editReviewForm->createView(), "search_form" => $searchForm];
     }
 }

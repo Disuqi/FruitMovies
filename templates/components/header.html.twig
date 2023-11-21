@@ -14,7 +14,7 @@
             {% set username = app.user.username %}
             <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName" class="flex items-center text-xl pe-1 font-medium text-white rounded-full transition ease-in-out duration-100 hover:text-indigo-400" type="button">
                 <span class="w-12 h-12">
-                    {% include 'elements/NoProfileImage.html.twig' with {'user': app.user, 'width': 'full', 'height': 'full' } %}
+                    {% include 'elements/userProfileImage.html.twig' with {'user': app.user, 'width': 'full', 'height': 'full' } %}
                 </span>
                 <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -33,17 +33,14 @@
     </div>
     <ul class="py-2 text-sm" aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
         <li>
-            <a href="{{ path('profile') }}" class="block px-4 py-2 hover:bg-gray-800">Profile</a>
-        </li>
-        <li>
-            <a href="{{ path('reviews') }}" class="block px-4 py-2 hover:bg-gray-800">Your Reviews</a>
+            <a href="{{ path('user', {'username' : app.user.username}) }}" class="block px-4 py-2 hover:bg-gray-800">Profile</a>
         </li>
         <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-800">Liked Reviews</a>
         </li>
         {% if is_granted("ROLE_ADMIN") %}
             <li>
-                <a href="{{ path('admin') }}" class="block px-4 py-2 hover:bg-gray-800">Admin Dashboard</a>
+                <a href="{{ path('reviews') }}" class="block px-4 py-2 hover:bg-gray-800">Add Movie</a>
             </li>
         {% endif %}
     </ul>

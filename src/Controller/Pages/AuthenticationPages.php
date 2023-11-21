@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Pages;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
-class AuthenticationController extends AbstractController
+class AuthenticationPages extends AbstractController
 {
     #[Route("/signUp", name: "signUp")]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, Security $security): Response

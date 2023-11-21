@@ -1,9 +1,8 @@
 <?php
-namespace App\Controller;
+namespace App\Controller\RequestHandlers;
 
 use App\Entity\Movie;
 use App\Form\AddMovieFormType;
-use App\Form\SearchFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -11,7 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MoviesController extends AbstractController
+class MoviesRequestHandler extends AbstractController
 {
     #[Route("/addMovie", name:"addMovie")]
     public function addMovie(Request $request, EntityManagerInterface $entityManager) : RedirectResponse

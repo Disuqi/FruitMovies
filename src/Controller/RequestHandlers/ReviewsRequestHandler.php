@@ -1,43 +1,22 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\RequestHandlers;
 
 use App\Entity\Movie;
 use App\Entity\Review;
+use App\Entity\ReviewVote;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
-use App\Repository\ReviewRepository;
 use App\Repository\ReviewVoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ReviewsController extends AbstractController
+class ReviewsRequestHandler extends AbstractController
 {
-    #[Route("reviews", name: "reviews")]
-    #[Template("profile/reviews.html.twig")]
-    public function reviews() : array
-    {
-        $reviews = $this->getUser()->getReviews();
-        $forms = [];
-        foreach($reviews as $review)
-        {
-            $options =
-                [
-                    "score" => $review->getScore(),
-                    "comment" => $review->getComment(),
-                ];
-
-            $forms[$review->getId()] = $this->createForm(ReviewFormType::class, options: $options)->createView();
-        }
-        $searchForm = $this->createForm(SearchFormType::class);
-        return ["reviews" => $reviews, "forms" => $forms, "search_form" => $searchForm];
-    }
-
     #[Route("/addReview/{id}", name: "addReview")]
     public function addReview(Movie $movie, Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
@@ -67,7 +46,30 @@ class ReviewsController extends AbstractController
             $entityManager->remove($review);
             $entityManager->flush();
         }
-        return $this->handleRedirect($movieId, $request);
+        return $this->handleRedirect($request);
+    }
+
+    #[Route("/vote/{id}/{liked}", name:"vote")]
+    public function vote(Review $review, bool $liked, Request $request, ReviewVoteRepository $reviewVoteRepository, EntityManagerInterface $entityManager) : RedirectResponse
+    {
+        $reviewVote = $reviewVoteRepository->findOneBy(["user" => $this->getUser()->getId(), "review" => $review->getId()]);
+
+        if(!$reviewVote)
+        {
+            $reviewVote = new ReviewVote();
+            $reviewVote->setReview($review);
+            $reviewVote->setUser($this->getUser());
+        }
+        else if($reviewVote->isLiked() === $liked)
+        {
+            $entityManager->remove($reviewVote);
+            $entityManager->flush();
+            return $this->redirectToRoute("movie", ["id" => $review->getMovie()->getId()]);
+        }
+        $reviewVote->setLiked($liked);
+        $entityManager->persist($reviewVote);
+        $entityManager->flush();
+        return $this->handleRedirect($request);
     }
 
     private function updateReview(Review $review, Request $request, EntityManagerInterface $entityManager): RedirectResponse
@@ -85,21 +87,12 @@ class ReviewsController extends AbstractController
                 print($e->getMessage());
             }
         }
-        return $this->handleRedirect($review->getMovie()->getId(), $request);
+        return $this->handleRedirect($request);
     }
 
-    private function handleRedirect(int $movieId, Request $request) : RedirectResponse
+    private function handleRedirect(Request $request) : RedirectResponse
     {
         $referer = $request->headers->get("referer");
-        if($referer)
-        {
-            $host = parse_url($referer, PHP_URL_HOST);
-            $myHost = $request->getHost();
-            if($host === $myHost)
-            {
-                return new RedirectResponse($referer);
-            }
-        }
-        return $this->redirectToRoute("movie", ["id" => $movieId]);
+        return new RedirectResponse($referer);
     }
 }

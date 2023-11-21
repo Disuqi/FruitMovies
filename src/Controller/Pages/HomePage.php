@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Pages;
 
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
@@ -10,7 +10,7 @@ use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class Home extends AbstractController
+class HomePage extends AbstractController
 {
     #[Route("/", name:"home")]
     #[Template("home.html.twig")]

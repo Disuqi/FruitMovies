@@ -52,10 +52,18 @@
                 {% endif %}
             </div>
             {% if movie.hasReleased() %}
+            {% set canReview = false %}
+            {% set userReview = null %}
+            {% if is_granted('IS_AUTHENTICATED') %}
+                {% set userReview =  app.user.getReviewForMovie(movie.getId()) %}
+                {% if userReview is null %}
+                    {% set canReview = true %}
+                {% endif %}
+            {% endif %}
                 <div>
                     <div class="flex flex-row gap-2 text-start align-middle items-center justify-start">
                         <h2 class="text-2xl font-bold">Reviews</h2>
-                        {% if is_granted('IS_AUTHENTICATED') and not app.user.hasReviewedMovie(movie.getId()) %}
+                        {% if canReview %}
                             <button data-modal-target="add-review-modal" data-modal-toggle="add-review-modal" type="button" class="hover:text-indigo-400 transition-colors duration-100 ease-in-out flex items-center justify-center align-middle">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -66,8 +74,13 @@
                     </div>
                     {% if reviews.count > 0 %}
                         <div class="flex flex-col gap-2 mt-4 w-full">
+                            {% if userReview %}
+                                {% include 'elements/review.html.twig' with {'review' : userReview, 'with_profile_header': true } %}
+                            {% endif %}
                             {% for review in reviews %}
-                                {% include 'elements/review.html.twig' with {'review' : review } %}
+                                {% if review != userReview %}
+                                    {% include 'elements/review.html.twig' with {'review' : review, 'with_profile_header': true } %}
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>
