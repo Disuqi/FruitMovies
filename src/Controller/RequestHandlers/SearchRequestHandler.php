@@ -10,6 +10,7 @@ use App\Utils\Search\OrderBy;
 use App\Utils\Search\SearchCategory;
 use App\Utils\Search\SearchOptions;
 use App\Utils\Search\SortOrder;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchRequestHandler extends AbstractController
 {
     #[Route("/search", name: "search")]
-    public function search(Request $request) : Response
+    public function search(Request $request, LoggerInterface $logger) : Response
     {
         $searchForm = $this->createForm(SearchFormType::class);
         $searchForm->handleRequest($request);
@@ -28,10 +29,11 @@ class SearchRequestHandler extends AbstractController
             $formData = $searchForm->getData();
             $slug = $formData["search_box"];
             $searchType = $formData["search_options"];
+            $logger->info("SLUG: " . $slug . " SEARCH TYPE: " . $searchType);
             if($searchType === "movie")
-                return $this->redirectToRoute("searchUser", ["slug" => $slug]);
+                return $this->redirectToRoute("searchMovie", ["slug" => $slug]);
             else
-                return $this->redirectToRoute("searchMovie", ["movie" => $slug]);
+                return $this->redirectToRoute("searchUser", ["slug" => $slug]);
         }
         return $this->redirectToRoute("home");
     }

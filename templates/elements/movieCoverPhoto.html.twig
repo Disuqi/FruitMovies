@@ -1,0 +1,12 @@
+{% set movieCoverPhoto = movie.getCoverPhoto() %}
+<div class="{{ style | default('') }} bg-gray-900 ">
+{% if movieCoverPhoto %}
+    <div class="{{ size | default('w-56 h-[21rem]') }} object-contain">
+        <img src="{{ movieCoverPhoto }}" alt="{{ movie.getTitle() }} Cover Photo"/>
+    </div>
+{% else %}
+    <div class="{{ size | default('w-56 h-[21rem]') }}  flex justify-center items-center">
+        {{ include('svgs/NoCoverPhoto.svg') }}
+    </div>
+{% endif %}
+</div>

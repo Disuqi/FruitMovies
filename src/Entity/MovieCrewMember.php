@@ -12,12 +12,12 @@ class MovieCrewMember
 {
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Movie::class)]
-    #[ORM\JoinColumn(name:"movie", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name:"movie", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?Movie $movie;
 
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: CrewMember::class)]
-    #[ORM\JoinColumn(name:"crew_member", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name:"crew_member", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?CrewMember $crewMember;
 
     public function getMovie(): Movie

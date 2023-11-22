@@ -13,12 +13,12 @@ class ReviewVote
 {
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Review::class)]
-    #[ORM\JoinColumn(name:"review", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name:"review", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?Review $review;
 
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name:"user", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name:"user", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?User $user;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]

@@ -4,18 +4,19 @@
     {{ include('components/header.html.twig') }}
     {% set director, actors =  movie.getDirector(), movie.getActors() %}
     <div class="flex flex-row container mx-auto items-start justify-center mt-10 w-full">
-        {% if movie.getCoverPhoto() %}
-            <img class="w-80 mx-12" src="{{ movie.getCoverPhoto() }}" alt="{{ movie.getTitle() }} Cover Photo"/>
-        {% else %}
-            <div class="w-80 mx-12">
-                {{ include('svgs/NoCoverPhoto.svg') }}
-            </div>
-        {% endif %}
+        {% include 'elements/movieCoverPhoto.html.twig' with {'size': 'w-80 h-[30rem]', 'style': 'mx-12'} %}
         <div class="flex flex-col justify-start items-start gap-8">
             <div>
-                <div class="mb-2">
-                    <h1 class="text-4xl font-bold">{{ movie.getTitle() }}</h1>
-                    <h3 class="ml-auto font-semibold">{{ movie.getReleaseDate().format("d-m-Y") }}</h3>
+                <div class="mb-2 flex flex-row w-full items-center">
+                    <div>
+                        <h1 class="text-4xl font-bold">{{ movie.getTitle() }}</h1>
+                        <h3 class="ml-auto font-semibold">{{ movie.getReleaseDate().format("d-m-Y") }}</h3>
+                    </div>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('deleteMovie', {'id': movie.getId()}) }}" class="p-2 text-red-600 ml-auto w-10 h-10 hover:text-red-500">
+                            {{ include('svgs/bin.svg') }}
+                        </a>
+                    {% endif %}
                 </div>
                 <p class="text-xl">{{ movie.getOverview() }}</p>
             </div>
@@ -56,7 +57,7 @@
             {% set userReview = null %}
             {% if is_granted('IS_AUTHENTICATED') %}
                 {% set userReview =  app.user.getReviewForMovie(movie.getId()) %}
-                {% if userReview is null %}
+                {% if userReview is null and not app.user.isRestricted() %}
                     {% set canReview = true %}
                 {% endif %}
             {% endif %}
@@ -69,7 +70,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </button>
-                            {% include 'modals/reviewFormModal.html.twig' with {'form': addReviewForm, 'formId': 'add-review-modal', 'formAction': path('addReview', {'id': movie.getId()})} %}
+                            {% include 'modals/addEditReview.html.twig' with {'form': addReviewForm, 'formId': 'add-review-modal', 'formAction': path('addReview', {'id': movie.getId()})} %}
                         {% endif %}
                     </div>
                     {% if reviews.count > 0 %}

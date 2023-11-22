@@ -42,4 +42,12 @@ class MoviesRequestHandler extends AbstractController
         }
         return $this->redirectToRoute("movie", ["id" => $movie->getId()]);
     }
+
+    #[Route("/deleteMovie/{id}", name: "deleteMovie")]
+    public function deleteMovie(Movie $movie, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $entityManager->remove($movie);
+        $entityManager->flush();
+        return $this->redirectToRoute("home");
+    }
 }

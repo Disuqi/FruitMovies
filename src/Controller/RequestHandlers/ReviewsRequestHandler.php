@@ -20,6 +20,11 @@ class ReviewsRequestHandler extends AbstractController
     #[Route("/addReview/{id}", name: "addReview")]
     public function addReview(Movie $movie, Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
+        if($this->getUser()->isRestricted())
+        {
+            return $this->handleRedirect($request);
+        }
+
         $review = new Review();
         $review->setMovie($movie);
         $review->setUser($this->getUser());
@@ -29,6 +34,10 @@ class ReviewsRequestHandler extends AbstractController
     #[Route("/editReview/{id}", name: "editReview")]
     public function editReview(Review $review, Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
+        if($this->getUser()->isRestricted())
+        {
+            return $this->handleRedirect($request);
+        }
         return $this->updateReview($review, $request, $entityManager);
     }
 
@@ -64,7 +73,7 @@ class ReviewsRequestHandler extends AbstractController
         {
             $entityManager->remove($reviewVote);
             $entityManager->flush();
-            return $this->redirectToRoute("movie", ["id" => $review->getMovie()->getId()]);
+            return $this->handleRedirect($request);
         }
         $reviewVote->setLiked($liked);
         $entityManager->persist($reviewVote);

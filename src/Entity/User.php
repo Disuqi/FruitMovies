@@ -37,6 +37,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column(nullable: false)]
+    private bool $restricted;
+
+    #[ORM\Column(nullable: false)]
     private \DateTimeImmutable $date_joined;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -44,6 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $roles = [];
+
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Review::class)]
     private Collection $reviews;
@@ -98,6 +102,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isRestricted() : bool
+    {
+        return $this->restricted;
+    }
+
+    public function setRestricted(bool $value) : static
+    {
+        $this->restricted = $value;
+
+        return $this;
+    }
+
+    public function updateRestricted(): void
+    {
+        $this->restricted = !$this->restricted;
+    }
+
     public function getDateJoined(): ?\DateTimeImmutable
     {
         return $this->date_joined;
@@ -140,11 +161,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getMainRole() : string
     {
-        if(in_array('ROLE_SUPER_ADMIN', $this->roles))
+        $roles = $this->getRoles();
+        if(in_array('ROLE_SUPER_ADMIN', $roles))
         {
             return "Super Admin";
         }
-        if(in_array('ROLE_ADMIN', $this->roles))
+        if(in_array('ROLE_ADMIN', $roles))
         {
             return "Admin";
         }

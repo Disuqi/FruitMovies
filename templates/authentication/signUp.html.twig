@@ -14,7 +14,7 @@
                         <div class="flex justify-center items-center">
                             <label id="fileInputLabel" for="{{ form.profilePhoto.vars.id }}" class="cursor-pointer border-2 border-gray-800 w-20 h-20 rounded-full flex justify-center items-center align-middle hover:text-indigo-600 bg-cover">
                                 <span id="no-image-svg" class="w-8 h-8">
-                                    {{ include('svgs/userProfileImage.html.twig') }}
+                                    {{ include('svgs/NoProfileImage.svg') }}
                                 </span>
                             </label>
                             {{ form_widget(form.profilePhoto, { 'attr' : { 'onchange': 'previewImage("' ~ form.profilePhoto.vars.id ~ '")'}}) }}
