@@ -2,6 +2,7 @@
 
 namespace App\Controller\Pages;
 
+use App\Form\AddMovieFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Repository\UserRepository;
@@ -30,13 +31,17 @@ class SearchPages extends AbstractController
         };
         $searchResult = $movieRepository->searchMovies($searchOptions);
         $searchForm = $this->createForm(SearchFormType::class);
+        $addMovieForm = null;
+        if($this->isGranted("ROLE_ADMIN"))
+            $addMovieForm = $this->createForm(AddMovieFormType::class);
         return
             [
                 "movies" => $searchResult->results,
                 "current_page" => $searchResult->current_page,
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
-                "search_form" => $searchForm
+                "search_form" => $searchForm,
+                "add_movie_form" => $addMovieForm
             ];
     }
 
@@ -47,14 +52,18 @@ class SearchPages extends AbstractController
         if($slug[0] == "@")
             $slug = substr($slug, 1);
         $searchResult = $userRepository->findByUsername($slug, $page);
-        $searchForm = $this->createForm(SearchFormType::class);
+        $searchForm = $this->createForm(SearchFormType::class)->createView();
+        $addMovieForm = null;
+        if($this->isGranted("ROLE_ADMIN"))
+            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
         return
             [
                 "users" => $searchResult->results,
                 "current_page" => $searchResult->current_page,
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
-                "search_form" => $searchForm
+                "search_form" => $searchForm,
+                "add_movie_form" => $addMovieForm
             ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Controller\Pages;
 
 
 use App\Entity\Movie;
+use App\Form\AddMovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,7 +18,7 @@ class MoviePage extends AbstractController
     #[Template("movie.html.twig")]
     public function movie(Movie $movie) : array
     {
-        $addReviewForm = $this->createForm(ReviewFormType::class);
+        $addReviewForm = $this->createForm(ReviewFormType::class)->createView();
         $options = [];
         if($this->isGranted("IS_AUTHENTICATED"))
         {
@@ -34,7 +35,7 @@ class MoviePage extends AbstractController
                 }
             }
         }
-        $editReviewForm = $this->createForm(ReviewFormType::class, options: $options);
+        $editReviewForm = $this->createForm(ReviewFormType::class, options: $options)->createView();
         $reviews = $movie->getReviews()->toArray();
 
         usort($reviews, function ($a, $b) {
@@ -43,7 +44,17 @@ class MoviePage extends AbstractController
             return $bValue - $aValue;
         });
         $reviews = new ArrayCollection($reviews);
-        $searchForm = $this->createForm(SearchFormType::class);
-        return ["movie" => $movie, "reviews" => $reviews, "addReviewForm" => $addReviewForm->createView(), "edit_review_form" => $editReviewForm->createView(), "search_form" => $searchForm];
+        $searchForm = $this->createForm(SearchFormType::class)->createView();
+        $addMovieForm = null;
+        if($this->isGranted("ROLE_ADMIN"))
+            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+        return [
+            "movie" => $movie,
+            "reviews" => $reviews,
+            "addReviewForm" => $addReviewForm,
+            "edit_review_form" => $editReviewForm,
+            "search_form" => $searchForm,
+            "add_movie_form" => $addMovieForm
+            ];
     }
 }

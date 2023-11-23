@@ -38,13 +38,13 @@
                 </div>
             {% endif %}
         <div class="ml-auto flex flex-row gap-2 items-start justify-end my-2">
-            {% if user == app.user and not user.isRestricted() %}
+            {% if user == app.user and not user.isRestricted() and edit_review_form is defined %}
                 <button data-modal-target="edit-review-modal-{{ review.getId() }}" data-modal-toggle="edit-review-modal-{{ review.getId() }}" type="button"  class="w-6 h-6 text-gray-300 hover:text-white">
                     {{ include('svgs/EditIcon.svg') }}
                 </button>
                 {% include 'modals/addEditReview.html.twig' with {'form': edit_review_form, 'formId': 'edit-review-modal-' ~ review.getId(), 'formAction': path('editReview', {'id': review.getId()})} %}
             {% endif %}
-            {% if is_granted('ROLE_ADMIN') or user == app.user%}
+            {% if is_granted('ROLE_ADMIN') or user == app.user %}
                 <a href="{{ path('deleteReview', {'id': review.getId() }) }}"  class="w-6 h-6 text-red-600 hover:text-red-500">
                     {{ include('svgs/bin.svg') }}
                 </a>

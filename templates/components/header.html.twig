@@ -35,12 +35,9 @@
         <li>
             <a href="{{ path('user', {'username' : app.user.username}) }}" class="block px-4 py-2 hover:bg-gray-800">Profile</a>
         </li>
-        <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-800">Liked Reviews</a>
-        </li>
         {% if is_granted("ROLE_ADMIN") %}
             <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-800">Add Movie</a>
+                <button data-modal-target="add-movie-modal" data-modal-toggle="add-movie-modal" type="button" class="block w-full text-start px-4 py-2 hover:bg-gray-800">Add Movie</button>
             </li>
         {% endif %}
     </ul>
@@ -48,4 +45,7 @@
         <a href="{{ path("signOut") }}" class="block px-4 py-2 text-sm hover:bg-gray-800">Sign out</a>
     </div>
 </div>
+{% endif %}
+{% if is_granted("ROLE_ADMIN") and add_movie_form is not null %}
+    {{ include('modals/addMovie.html.twig') }}
 {% endif %}

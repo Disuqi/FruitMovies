@@ -19,9 +19,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class AuthenticationPages extends AbstractController
 {
     #[Route("/signUp", name: "signUp")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, Security $security): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AuthenticationUtils $authenticationUtils, Security $security): Response
     {
+        $lastUsername = $authenticationUtils->getLastUsername();
         $user = new User();
+        $user->setUsername($lastUsername);
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -33,6 +35,7 @@ class AuthenticationPages extends AbstractController
                 )
             );
             $user->setDateJoined(new \DateTimeImmutable());
+            $user->setRestricted(false);
 
             $entityManager->persist($user);
             $entityManager->flush();
