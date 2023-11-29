@@ -6,33 +6,20 @@ use App\Entity\Movie;
 use App\Repository\CrewMemberRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
 class AddMovieFormType extends AbstractType
 {
-    private CrewMemberRepository $crewMemberRepository;
-    public function __construct(CrewMemberRepository $crewMemberRepository)
-    {
-        $this->crewMemberRepository = $crewMemberRepository;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $directorEntities = $this->crewMemberRepository->findBy(["role" => "Director"]);
-        $actorEntities = $this->crewMemberRepository->findBy(["role" => "Actor"]);
-        $actors = [];
-        foreach ($actorEntities as $actor) {
-            $actors[$actor->getName()] = $actor->getId();
-        }
-        $directors = [];
-        foreach ($directorEntities as $director) {
-            $directors[$director->getName()] = $director->getId();
-        }
         $builder
             ->add("cover_photo", FileType::class, [
                 "label" => null,
@@ -50,17 +37,22 @@ class AddMovieFormType extends AbstractType
                 "attr" => ["min" => 0]
             ])
             ->add("overview")
-            ->add("release_date")
-            ->add("director", ChoiceType::class, [
-                "choices" => $directors,
-                "placeholder" => "Choose a director",
+            ->add("release_date", DateType::class,
+                [
+                    "mapped" => false,
+                ])
+            ->add("director", TextType::class,
+                [
+                    "required" => false,
+                    "mapped"=>false,
+                ])
+            ->add("actors" , CollectionType::class, [
+                "mapped" => false,
+                "entry_type" => TextType::class,
+                "allow_add" => true,
+                "allow_delete" => true,
                 "required" => false,
-            ])
-            ->add("actors" , ChoiceType::class, [
-                "choices" => $actors,
-                "multiple" => true,
-                "placeholder" => "Choose actors",
-                "required" => false,
+                "entry_options" => ["label" => false, "required" => false]
             ])
             ->add("submit", SubmitType::class)
             ->setAction("addMovie");

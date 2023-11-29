@@ -24,6 +24,9 @@
             </div>
         </div>
         <div id="moviesContainer" class="flex flex-row flex-wrap justify-center items-center gap-2">
+            {% if users | length == 0 %}
+                <h1 class="w-full">No Users Found</h1>
+            {% endif %}
             {% for user in users %}
                 {% set profile_image = user.getProfileImage() %}
                 <a href="{{ path('user', {'username' : user.username}) }}" class="flex flex-row justify-center align-middle items-center p-5 border border-gray-800 bg-gray-900 rounded-md w-[22rem]">

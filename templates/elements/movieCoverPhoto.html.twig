@@ -1,5 +1,5 @@
 {% set movieCoverPhoto = movie.getCoverPhoto() %}
-<div class="{{ style | default('') }} bg-gray-900 ">
+<div class="{{ style | default('') }}">
 {% if movieCoverPhoto %}
     <div class="{{ size | default('w-56 h-[21rem]') }} object-contain">
         <img src="{{ movieCoverPhoto }}" alt="{{ movie.getTitle() }} Cover Photo"/>

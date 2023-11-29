@@ -3,39 +3,112 @@
 namespace App\Controller\Pages;
 
 use App\Form\AddMovieFormType;
+use App\Form\OrderMoviesFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Repository\UserRepository;
-use App\Utils\Search\OrderBy;
-use App\Utils\Search\SearchCategory;
-use App\Utils\Search\SearchOptions;
+use App\Utils\Search\OrderMoviesBy;
+use App\Utils\Search\MoviesSearchCategory;
+use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\SortOrder;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SearchPages extends AbstractController
 {
+    private ?MoviesSearchCategory $lastSearchCategory = null;
+    private ?MoviesSearchOptions $lastSearchOptions = null;
+
     #[Route("/search/movie/{slug}/{page}", name:"searchMovie")]
     #[Template("search/searchMovie.html.twig")]
-    public function searchMovie(MovieRepository $movieRepository, string $slug, int $page = 1) : array
+    public function searchMovie(Request $request, MovieRepository $movieRepository, string $slug, int $page = 1) : array
     {
-        $searchOptions = match ($slug) {
-            SearchCategory::Popular->value => new SearchOptions(OrderBy::Reviews, page: $page),
-            SearchCategory::TopRated->value => new SearchOptions(OrderBy::Rating, page: $page),
-            SearchCategory::Latest->value => new SearchOptions(OrderBy::ReleaseDate, startDate: new \DateTime("-2 months"), endDate: new \DateTime(), page: $page),
-            SearchCategory::Upcoming->value => new SearchOptions(OrderBy::ReleaseDate, orderSort: SortOrder::Ascending, startDate: new \DateTime( "+1 day"), page: $page),
-            SearchCategory::All->value => new SearchOptions(OrderBy::Title, orderSort: SortOrder::Ascending),
-            default => new SearchOptions(page: $page, searchQuery: $slug),
-        };
-        $searchResult = $movieRepository->searchMovies($searchOptions);
+        $orderForm = $this->createForm(OrderMoviesFormType::class);
+        $orderForm->handleRequest($request);
         $searchForm = $this->createForm(SearchFormType::class);
         $addMovieForm = null;
+
         if($this->isGranted("ROLE_ADMIN"))
             $addMovieForm = $this->createForm(AddMovieFormType::class);
+
+        $searchOptions = new MoviesSearchOptions(page: $page);
+        try
+        {
+            $category = MoviesSearchCategory::from($slug);
+        }catch(\Exception $e)
+        {
+            $category = null;
+        }
+
+        switch ($slug)
+        {
+            case MoviesSearchCategory::Popular->value:
+                $searchOptions->orderBy = OrderMoviesBy::Reviews;
+                break;
+            case MoviesSearchCategory::TopRated->value:
+                $searchOptions->orderBy = OrderMoviesBy::Rating;
+                break;
+            case MoviesSearchCategory::Latest->value:
+                $searchOptions->orderBy = OrderMoviesBy::ReleaseDate;
+                $searchOptions->startDate = new \DateTime("-2 months");
+                $searchOptions->endDate = new \DateTime();
+                break;
+            case MoviesSearchCategory::Upcoming->value:
+                $searchOptions->orderBy = OrderMoviesBy::ReleaseDate;
+                $searchOptions->sortOrder = SortOrder::Ascending;
+                $searchOptions->startDate = new \DateTime("+1 day");
+                break;
+            case MoviesSearchCategory::All->value:
+                $searchOptions->orderBy = OrderMoviesBy::Title;
+                $searchOptions->sortOrder = SortOrder::Ascending;
+                break;
+            default:
+                $searchOptions->searchQuery = $slug;
+                break;
+        }
+
+        if($orderForm->isSubmitted() && $orderForm->isValid())
+        {
+            $orderBy = $orderForm->get("order_by")->getData();
+            $searchOptions->additionalOrderBy = $searchOptions->orderBy;
+            switch ($orderBy)
+            {
+                case OrderMoviesBy::Title:
+                    $searchOptions->orderBy = OrderMoviesBy::Title;
+                    break;
+                case OrderMoviesBy::Rating:
+                    $searchOptions->orderBy = OrderMoviesBy::Rating;
+                    break;
+                case OrderMoviesBy::ReleaseDate:
+                    $searchOptions->orderBy = OrderMoviesBy::ReleaseDate;
+                    break;
+            }
+
+            $sortBy = $orderForm->get("sort_by")->getData();
+            $searchOptions->additionalSortOrder = $searchOptions->sortOrder;
+            switch ($sortBy)
+            {
+                case SortOrder::Ascending:
+                    $searchOptions->sortOrder = SortOrder::Ascending;
+                    break;
+                case SortOrder::Descending:
+                    $searchOptions->sortOrder = SortOrder::Descending;
+                    break;
+            }
+        }
+        elseif($this->lastSearchCategory == $category)
+        {
+            $searchOptions = $this->lastSearchOptions;
+        }
+        $searchResult = $movieRepository->searchMovies($searchOptions);
+        $this->lastSearchCategory = $category;
+        $this->lastSearchOptions = $searchOptions;
+
         return
             [
+                "order_form" => $orderForm,
                 "movies" => $searchResult->results,
                 "current_page" => $searchResult->current_page,
                 "total_pages" => $searchResult->total_pages,

@@ -26,7 +26,8 @@
             </div>
             <div class="ml-auto my-auto h-full flex flex-col gap-2 justify-center items-end align-middle font-semibold">
                 {% if app.user != user %}
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% set roles = user.getRoles() %}
+                    {% if is_granted('ROLE_ADMIN') and 'ROLE_ADMIN' not in roles and 'ROLE_SUPER_ADMIN' not in roles %}
                         <a href="{{ path('restrictUser', {'id': user.id }) }}" class="h-full flex flex-row gap-2 items-center justify-end hover:text-indigo-500">
                             {% if user.isRestricted() %}
                                 Remove Restriction
@@ -38,7 +39,7 @@
                             </svg>
                         </a>
                     {% endif %}
-                    {% if is_granted('ROLE_SUPER_ADMIN') and 'ROLE_ADMIN' not in user.getRoles() and 'ROLE_SUPER_ADMIN' not in user.getRoles() %}
+                    {% if is_granted('ROLE_SUPER_ADMIN') and 'ROLE_ADMIN' not in roles and 'ROLE_SUPER_ADMIN' not in roles %}
                             <a href="{{ path('makeAdmin', {'id': user.id }) }}" class="h-full flex flex-row gap-2 items-center justify-end hover:text-blue-500">
                                 Make Admin
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-500">

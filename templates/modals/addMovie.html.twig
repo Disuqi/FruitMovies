@@ -13,41 +13,70 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <div class="p-4 md:p-5 space-y-4 text-gray-200 text-xl flex flex-row gap-10 items-center justify-center">
-                <label id="fileInputLabel" for="{{ add_movie_form.cover_photo.vars.id }}" class="border border-gray-800 w-72 h-96 cursor-pointer hover:brightness-125 bg-cover">
-                    <span id="no-image-svg" class="flex items-center justify-center w-full h-full">
-                        {{ include('svgs/NoCoverPhoto.svg') }}
-                    </span>
-                </label>
-                {{ form_widget(add_movie_form.cover_photo, {'attr': {'onchange': 'previewImage("' ~ add_movie_form.cover_photo.vars.id ~ '")'}}) }}
+            <div class="p-4 md:p-5 space-y-4 text-gray-200 text-xl flex flex-row gap-10 items-center justify-evenly">
+                <div class="w-full h-full flex flex-col gap-2 items-center justify-center">
+                    <h4 class="w-full text-start">Cover Photo</h4>
+                    <label id="fileInputLabel" for="{{ add_movie_form.cover_photo.vars.id }}" class="border border-gray-800 w-72 h-96 cursor-pointer hover:brightness-125 bg-cover">
+                        <span id="no-image-svg" class="flex items-center justify-center w-full h-full">
+                            {{ include('svgs/NoCoverPhoto.svg') }}
+                        </span>
+                    </label>
+                    {{ form_widget(add_movie_form.cover_photo, {'attr': {'onchange': 'previewImage("' ~ add_movie_form.cover_photo.vars.id ~ '")'}}) }}
+                </div>
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Title</h4>
-                        {{ form_widget(add_movie_form.title, {'attr': {'class' : 'w-72 rounded-md text-black ml-auto'}}) }}
+                        {{ form_widget(add_movie_form.title, {'attr': {'class' : 'w-72 text-black'}}) }}
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Overview</h4>
-                        {{ form_widget(add_movie_form.overview, {'attr': {'class' : 'w-72 rounded-md text-black ml-auto'}}) }}
+                        {{ form_widget(add_movie_form.overview, {'attr': {'class' : 'w-72 text-black'}}) }}
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Running Time</h4>
-                        {{ form_widget(add_movie_form.running_time, {'attr': {'class' : 'w-72 rounded-md text-black ml-auto'}}) }}
+                        {{ form_widget(add_movie_form.running_time, {'attr': {'class' : 'w-72 text-black'}}) }}
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Release Date</h4>
-                        {{ form_widget(add_movie_form.release_date, {'attr': {'class' : 'w-72 text-black ml-auto'}}) }}
+                        {{ form_widget(add_movie_form.release_date, {'attr': {'class' : 'w-72 text-black'}}) }}
                     </div>
-                    <div class="flex flex-col gap-1 items-start justify-start">
-                        <button>Set Director</button>
+                    <div class="flex flex-col">
+                        <label for="director-input">Director</label>
+                        <div class="flex flex-row gap-2 items-center justify-between">
+                            <div class="inline-block relative">
+                                <input class="text-black" id="director-input" type="text" onkeyup="fetchDirectors()"/>
+                                <div id="directors-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
+                                    <div id="list-of-directors" class="py-2 text-sm flex flex-col">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="set-director" onclick="setDirector()" class="py-2 px-4 text-center rounded-md text-sm font-light bg-blue-600 hover:bg-blue-500 cursor-pointer">Set</button>
+                        </div>
                         {{ form_widget(add_movie_form.director, {'attr': {'class' : 'hidden'}}) }}
                     </div>
-                    <div class="flex flex-col gap-1 items-start justify-start">
-                        <button>Add Actor</button>
+                    <div class="flex flex-col">
+                        <label for="actor-input">Actor</label>
+                        <div class="flex flex-row gap-2 items-center justify-between">
+                            <div class="inline-block relative">
+                                <input class="text-black" id="actor-input" type="text" onkeyup="fetchActors()" />
+                                <div id="actors-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
+                                    <div id="list-of-actors" class="py-2 text-sm flex flex-col">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addActor()" class="py-2 px-4 text-center rounded-md text-sm font-light bg-green-600 hover:bg-green-500 cursor-pointer">Add</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1>Added Actors</h1>
+                        <div id="added-actors" class="h-20 border border-gray-700 bg-gray-800 overflow-y-auto flex flex-col gap-4 p-2 font- text-sm items-center">
+                            <h1 id="added-actors-placeholder">No Actors</h1>
+                        </div>
                         {{ form_widget(add_movie_form.actors, {'attr': {'class' : 'hidden'}}) }}
                     </div>
                 </div>
             </div>
-            <div class="flex items-center p-4 md:p-5 border-t border-gray-800 rounded-b dark:border-gray-600">
+            <div class="flex items-center justify-end p-4 md:p-5 border-t border-gray-800 rounded-b dark:border-gray-600">
                 {{ form_widget(add_movie_form.submit, {'attr' : {'class': 'bg-indigo-500 hover:bg-indigo-400 px-4 py-2 rounded-md'}}) }}
             </div>
         {{ form_end(add_movie_form) }}
@@ -57,11 +86,215 @@
 <script>
     function fetchDirectors()
     {
+        console.log("FETCH DIRECTORS");
+        const dropdown = document.getElementById("directors-dropdown");
+        const directorsList = document.getElementById("list-of-directors");
+        const directorInput = document.getElementById("director-input");
+        const searchQuery = directorInput.value;
 
+        if(searchQuery.length < 3)
+        {
+            directorsList.replaceChildren();
+            dropdownHandler(dropdown, false);
+            return;
+        }
+
+        $.ajax(
+            {
+                url: "{{ path('directors') }}",
+                type: 'POST',
+                data: { searchQuery: searchQuery },
+                success: function(data)
+                {
+                    const directorsFound = JSON.parse(data);
+                    if(directorsFound.length > 0)
+                        dropdownHandler(dropdown, true);
+                    else
+                        dropdownHandler(dropdown, false);
+
+                    directorsList.replaceChildren();
+                    directorsFound.forEach((director) =>
+                    {
+                        const name = director["name"];
+                        const btn = document.createElement("button");
+                        btn.type = "button";
+                        btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
+                        btn.textContent = name;
+                        btn.onclick = () =>
+                        {
+                            directorInput.value = name;
+                            setDirector();
+                        };
+                        directorsList.append(btn);
+                    })
+                }
+            });
     }
 
     function fetchActors()
     {
+        const dropdown = document.getElementById("actors-dropdown");
+        const actorsList = document.getElementById("list-of-actors");
+        const actorInput = document.getElementById("actor-input");
+        const searchQuery = actorInput.value;
 
+        if(searchQuery.length < 4)
+        {
+            actorsList.replaceChildren();
+            dropdownHandler(dropdown, false);
+            return;
+        }
+
+        $.ajax(
+            {
+                url: "{{ path('actors') }}",
+                type: 'POST',
+                data: { searchQuery: searchQuery },
+                success: function(data)
+                {
+                    const actorsFound = JSON.parse(data);
+                    if(actorsFound.length > 0)
+                        dropdownHandler(dropdown, true);
+                    else
+                        dropdownHandler(dropdown, false);
+
+                    actorsList.replaceChildren();
+                    actorsFound.forEach((actor) =>
+                    {
+                        const name = actor["name"];
+                        const btn = document.createElement("button");
+                        btn.type = "button";
+
+                        btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
+                        btn.textContent = name;
+                        btn.onclick = () =>
+                        {
+                            actorInput.value = name;
+                            addActor(name);
+                        };
+                        actorsList.append(btn);
+                    })
+                }
+            });
+    }
+
+    function dropdownHandler(dropdown, show)
+    {
+        if(show)
+        {
+            if(dropdown.classList.contains("block")) return;
+            dropdown.classList.remove("hidden");
+            dropdown.classList.add("block")
+        }
+        else
+        {
+            if(dropdown.classList.contains("hidden")) return;
+            dropdown.classList.remove("block");
+            dropdown.classList.add("hidden");
+        }
+    }
+
+    function addActor()
+    {
+        const dropdown = document.getElementById("actors-dropdown");
+        dropdownHandler(dropdown, false);
+
+        const actorInput = document.getElementById("actor-input");
+        name = actorInput.value;
+        if(name.length === 0)
+            return;
+        const addedActors = document.getElementById("added-actors");
+        const placeholder = document.getElementById("added-actors-placeholder");
+        if(placeholder)
+            addedActors.removeChild(placeholder);
+
+        const actorDiv = document.createElement("div");
+        const baseId = name.toLowerCase().replace(/\s+/g, '-');
+        actorDiv.id = baseId + "-container";
+        actorDiv.className = "flex flex-row items-center gap-2 w-full";
+        const actorHeading = document.createElement("h1");
+        actorHeading.textContent = name;
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.onclick = () => {removeActor(baseId)};
+        removeBtn.textContent = "Remove"
+        removeBtn.className = "p-1 text-xs bg-red-600 hover:bg-red-500 rounded-sm ml-auto"
+
+        actorDiv.append(actorHeading);
+        actorDiv.append(removeBtn);
+        addedActors.append(actorDiv);
+        actorInput.value = "";
+
+        const formActors = document.getElementById("{{ add_movie_form.actors.vars.id }}");
+        const index = formActors.children.length;
+        const addedActorInput = document.createElement("input");
+        addedActorInput.id = baseId + "-actor";
+        addedActorInput.type="text";
+        addedActorInput.name = "{{ add_movie_form.vars.id }}[actors][" + index + "]";
+        addedActorInput.value = name;
+        formActors.append(addedActorInput);
+    }
+
+    function removeActor(baseId)
+    {
+        const addedActors = document.getElementById("added-actors");
+        const actorDiv = document.getElementById(baseId + "-container");
+        addedActors.removeChild(actorDiv);
+        if(!addedActors.firstChild)
+        {
+            const placeholder = document.createElement("h1");
+            placeholder.id = "added-actors-placeholder";
+            addedActors.append(placeholder);
+        }
+
+        const formActors = document.getElementById("{{ add_movie_form.actors.vars.id }}");
+        const optionId = baseId + "-actor";
+        const option = document.getElementById(optionId);
+        formActors.removeChild(option);
+    }
+
+    function setDirector()
+    {
+        console.log("SET DIRECTOR")
+        const dropdown = document.getElementById("directors-dropdown");
+        dropdownHandler(dropdown, false);
+
+        const directorInput = document.getElementById("director-input");
+        name = directorInput.value;
+        if(name.length === 0)
+            return;
+        const directorHeading = document.createElement("h1");
+        directorHeading.id = "selected-director"
+        directorHeading.className = "font-light";
+        directorHeading.textContent = name;
+
+        directorInput.parentNode.replaceChild(directorHeading, directorInput);
+
+        const setDirectorBtn = document.getElementById("set-director");
+        setDirectorBtn.textContent = "Change";
+        setDirectorBtn.onclick = changeDirector;
+
+        const formDirector = document.getElementById("{{ add_movie_form.director.vars.id }}");
+        formDirector.value = name;
+    }
+
+    function changeDirector()
+    {
+        console.log("Change director")
+        const directorHeading = document.getElementById("selected-director");
+        const directorInput = document.createElement("input");
+        directorInput.type = "text";
+        directorInput.id = "director-input"
+        directorInput.onkeyup = fetchDirectors;
+        directorInput.className = "text-black";
+
+        directorHeading.parentNode.replaceChild(directorInput, directorHeading);
+
+        const setDirectorBtn = document.getElementById("set-director");
+        setDirectorBtn.textContent = "Set";
+        setDirectorBtn.onclick = setDirector;
+
+        const formDirector = document.getElementById("{{ add_movie_form.director.vars.id }}");
+        formDirector.value = "";
     }
 </script>

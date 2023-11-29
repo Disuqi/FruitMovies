@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
-use App\Utils\Search\OrderBy;
-use App\Utils\Search\SearchOptions;
+use App\Utils\Search\OrderMoviesBy;
+use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\SearchResult;
 use App\Utils\Search\SortOrder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -23,7 +23,7 @@ class MovieRepository extends ServiceEntityRepository
         parent::__construct($registry, Movie::class);
     }
 
-    public function searchMovies(SearchOptions $options)
+    public function searchMovies(MoviesSearchOptions $options)
     {
         $qb = $this->createQueryBuilder("m");
         $qb->select("m");
@@ -76,21 +76,21 @@ class MovieRepository extends ServiceEntityRepository
         return new SearchResult($results, $options->page, $totalPages);
     }
 
-    private function queryOrderBy(QueryBuilder $qb, OrderBy $orderBy, SortOrder $sortOrder)
+    private function queryOrderBy(QueryBuilder $qb, OrderMoviesBy $orderBy, SortOrder $sortOrder)
     {
         switch($orderBy)
         {
-            case OrderBy::Title:
+            case OrderMoviesBy::Title:
                 $qb->addOrderBy("m.title", $sortOrder->value);
                 break;
-            case OrderBy::Rating:
+            case OrderMoviesBy::Rating:
                 $qb->addSelect("AVG(". self::REVIEW_TABLE_ALIAS .".score) as " . self::AVERAGE_RATING_NAME)
                     ->addOrderBy(self::AVERAGE_RATING_NAME, $sortOrder->value);
                 break;
-            case OrderBy::ReleaseDate:
+            case OrderMoviesBy::ReleaseDate:
                 $qb->addOrderBy("m.release_date", $sortOrder->value);
                 break;
-            case OrderBy::Reviews:
+            case OrderMoviesBy::Reviews:
                 $qb->addSelect("COUNT(". self::REVIEW_TABLE_ALIAS .".id) as " . self::REVIEW_COUNT_NAME)
                     ->addOrderBy(self::REVIEW_COUNT_NAME, $sortOrder->value);
                 break;

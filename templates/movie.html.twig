@@ -3,17 +3,17 @@
 {% block body %}
     {{ include('components/header.html.twig') }}
     {% set director, actors =  movie.getDirector(), movie.getActors() %}
-    <div class="flex flex-row container mx-auto items-start justify-center mt-10 w-full">
+    <div class="flex flex-row container mx-auto items-start justify-center mt-10">
         {% include 'elements/movieCoverPhoto.html.twig' with {'size': 'w-80 h-[30rem]', 'style': 'mx-12'} %}
         <div class="flex flex-col justify-start items-start gap-8">
-            <div>
-                <div class="mb-2 flex flex-row w-full items-center">
+            <div class="w-full">
+                <div class="mb-2 flex flex-row w-full items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold">{{ movie.getTitle() }}</h1>
                         <h3 class="ml-auto font-semibold">{{ movie.getReleaseDate().format("d-m-Y") }}</h3>
                     </div>
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('deleteMovie', {'id': movie.getId()}) }}" class="p-2 text-red-600 ml-auto w-10 h-10 hover:text-red-500">
+                        <a href="{{ path('deleteMovie', {'id': movie.getId()}) }}" class="p-2 text-red-600 w-10 h-10 hover:text-red-500">
                             {{ include('svgs/bin.svg') }}
                         </a>
                     {% endif %}
@@ -25,7 +25,15 @@
                     <div class="flex flex-col justify-start gap-2">
                         <h2 class="text-2xl font-bold">Director</h2>
                         <div>
-                            <img class="h-60 w-40" src="{{ director.getPhoto() }}" alt="{{ director.getName() }} Photo"/>
+                            <div class="h-60 w-40 flex justify-center items-center">
+                                {% if director.getPhoto() %}
+                                    <img src="{{ director.getPhoto() }}" alt="{{ director.getName() }} Photo"/>
+                                {% else %}
+                                    <div class="w-full">
+                                        {{ include('svgs/NoCrewMemberPhoto.svg') }}
+                                    </div>
+                                {% endif %}
+                            </div>
                             <h3 class="font-medium">{{ director.getName() }}</h3>
                         </div>
                     </div>

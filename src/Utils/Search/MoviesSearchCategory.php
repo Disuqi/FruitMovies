@@ -2,7 +2,7 @@
 
 namespace App\Utils\Search;
 
-enum SearchCategory : string
+enum MoviesSearchCategory : string
 {
     case Popular = "popular";
     case TopRated = "top rated";

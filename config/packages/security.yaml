@@ -47,6 +47,8 @@ security:
          - { path: ^/deleteReview, roles: ROLE_USER }
          - { path: ^/vote, roles: ROLE_USER }
          - { path: ^/deleteUser, roles: ROLE_USER }
+         - { path: ^/directors, roles: ROLE_ADMIN }
+         - { path: ^/actors, roles: ROLE_ADMIN }
          - { path: ^/addMovie, roles: ROLE_ADMIN }
          - { path: ^/deleteMovie, roles: ROLE_ADMIN }
          - { path: ^/restrictUser, roles: ROLE_ADMIN }

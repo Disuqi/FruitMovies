@@ -2,7 +2,7 @@
 
 namespace App\Utils\Search;
 
-enum OrderBy : string
+enum OrderMoviesBy : string
 {
     case None = 'none';
     case Title = 'title';
