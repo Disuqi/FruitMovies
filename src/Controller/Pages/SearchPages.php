@@ -18,9 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SearchPages extends AbstractController
 {
-    private ?MoviesSearchCategory $lastSearchCategory = null;
-    private ?MoviesSearchOptions $lastSearchOptions = null;
-
     #[Route("/search/movie/{slug}/{page}", name:"searchMovie")]
     #[Template("search/searchMovie.html.twig")]
     public function searchMovie(Request $request, MovieRepository $movieRepository, string $slug, int $page = 1) : array
@@ -37,7 +34,7 @@ class SearchPages extends AbstractController
         try
         {
             $category = MoviesSearchCategory::from($slug);
-        }catch(\Exception $e)
+        }catch(\Error $e)
         {
             $category = null;
         }
@@ -70,6 +67,10 @@ class SearchPages extends AbstractController
                 break;
         }
 
+        $session = $request->getSession();
+        $lastSearchCategory = $session->get("lastSearchCategory");
+        $lastSearchOptions = $session->get("lastSearchOptions");
+
         if($orderForm->isSubmitted() && $orderForm->isValid())
         {
             $searchOptions->additionalOrderBy = $searchOptions->orderBy;
@@ -77,13 +78,15 @@ class SearchPages extends AbstractController
             $searchOptions->orderBy = $searchFormOptions->orderBy;
             $searchOptions->sortOrder = $searchFormOptions->sortOrder;
         }
-        elseif($this->lastSearchCategory == $category)
+        elseif($lastSearchCategory === $category && $lastSearchOptions !== null && $lastSearchOptions != null)
         {
-            $searchOptions = $this->lastSearchOptions;
+            $lastSearchOptions->page = $page;
+            $searchOptions = $lastSearchOptions;
         }
         $searchResult = $movieRepository->searchMovies($searchOptions);
-        $this->lastSearchCategory = $category;
-        $this->lastSearchOptions = $searchOptions;
+
+        $session->set("lastSearchCategory", $category);
+        $session->set("lastSearchOptions", $searchOptions);
 
         return
             [
@@ -101,7 +104,7 @@ class SearchPages extends AbstractController
     #[Template("search/searchUser.html.twig")]
     public function searchUser(UserRepository $userRepository, string $slug, int $page = 1) : array
     {
-        if($slug[0] == "@")
+        if($slug[0] === "@")
             $slug = substr($slug, 1);
         $searchResult = $userRepository->findByUsername($slug, $page);
         $searchForm = $this->createForm(SearchFormType::class)->createView();
