@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\SortOrder;
 use Symfony\Component\Form\AbstractType;
@@ -15,7 +16,7 @@ class OrderMoviesFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add("order_by", ChoiceType::class,
+            ->add("orderBy", ChoiceType::class,
                 [
                     "label" => "Order By",
                     "choices" =>
@@ -27,7 +28,7 @@ class OrderMoviesFormType extends AbstractType
                     "expanded"=> false,
                     "multiple" => false,
                 ])
-            ->add("sort_by", ChoiceType::class,
+            ->add("sortOrder", ChoiceType::class,
                 [
                     "label" => null,
                     "choices" =>
@@ -43,6 +44,8 @@ class OrderMoviesFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'data_class' => MoviesSearchOptions::class
+        ]);
     }
 }

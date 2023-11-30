@@ -25,7 +25,8 @@ class SearchPages extends AbstractController
     #[Template("search/searchMovie.html.twig")]
     public function searchMovie(Request $request, MovieRepository $movieRepository, string $slug, int $page = 1) : array
     {
-        $orderForm = $this->createForm(OrderMoviesFormType::class);
+        $searchFormOptions = new MoviesSearchOptions(page: $page);
+        $orderForm = $this->createForm(OrderMoviesFormType::class, $searchFormOptions);
         $orderForm->handleRequest($request);
         $searchForm = $this->createForm(SearchFormType::class);
         $addMovieForm = null;
@@ -33,7 +34,6 @@ class SearchPages extends AbstractController
         if($this->isGranted("ROLE_ADMIN"))
             $addMovieForm = $this->createForm(AddMovieFormType::class);
 
-        $searchOptions = new MoviesSearchOptions(page: $page);
         try
         {
             $category = MoviesSearchCategory::from($slug);
@@ -42,6 +42,7 @@ class SearchPages extends AbstractController
             $category = null;
         }
 
+        $searchOptions = new MoviesSearchOptions(page: $page);
         switch ($slug)
         {
             case MoviesSearchCategory::Popular->value:
@@ -71,32 +72,10 @@ class SearchPages extends AbstractController
 
         if($orderForm->isSubmitted() && $orderForm->isValid())
         {
-            $orderBy = $orderForm->get("order_by")->getData();
             $searchOptions->additionalOrderBy = $searchOptions->orderBy;
-            switch ($orderBy)
-            {
-                case OrderMoviesBy::Title:
-                    $searchOptions->orderBy = OrderMoviesBy::Title;
-                    break;
-                case OrderMoviesBy::Rating:
-                    $searchOptions->orderBy = OrderMoviesBy::Rating;
-                    break;
-                case OrderMoviesBy::ReleaseDate:
-                    $searchOptions->orderBy = OrderMoviesBy::ReleaseDate;
-                    break;
-            }
-
-            $sortBy = $orderForm->get("sort_by")->getData();
             $searchOptions->additionalSortOrder = $searchOptions->sortOrder;
-            switch ($sortBy)
-            {
-                case SortOrder::Ascending:
-                    $searchOptions->sortOrder = SortOrder::Ascending;
-                    break;
-                case SortOrder::Descending:
-                    $searchOptions->sortOrder = SortOrder::Descending;
-                    break;
-            }
+            $searchOptions->orderBy = $searchFormOptions->orderBy;
+            $searchOptions->sortOrder = $searchFormOptions->sortOrder;
         }
         elseif($this->lastSearchCategory == $category)
         {

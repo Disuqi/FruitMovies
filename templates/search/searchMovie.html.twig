@@ -7,9 +7,9 @@
             {{ form_start(order_form) }}
                 <div class="flex flex-row items-center justify-between">
                     <div class="flex flex-row gap-2 items-center justify-center">
-                        {{ form_label(order_form.order_by) }}
-                        {{ form_widget(order_form.order_by, {'attr': {'class' : 'rounded-md text-black cursor-pointer'}}) }}
-                        {{ form_widget(order_form.sort_by, {'attr': {'class': 'rounded-md text-black cursor-pointer'}}) }}
+                        {{ form_label(order_form.orderBy) }}
+                        {{ form_widget(order_form.orderBy, {'attr': {'class' : 'rounded-md text-gray-200 bg-gray-900 cursor-pointer'}}) }}
+                        {{ form_widget(order_form.sortOrder, {'attr': {'class': 'rounded-md text-gray-200 bg-gray-900 cursor-pointer'}}) }}
                     </div>
                     <div class="flex items-center justify-center">
                         {{ form_widget(order_form.apply, {'attr': {'class': 'rounded-md bg-indigo-500 hover:bg-indigo-400 py-2 px-4'}}) }}
