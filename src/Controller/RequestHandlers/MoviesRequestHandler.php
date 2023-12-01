@@ -72,13 +72,14 @@ class MoviesRequestHandler extends AbstractController
                 $entityManager->persist($movieActorRelation);
             }
             $entityManager->flush();
+            return $this->redirectToRoute("movie", ["id" => $movie->getId()]);
         }
-        ErrorHandler::AddFormErrors($form);
-        return $this->redirectToRoute("movie", ["id" => $movie->getId()]);
+        ErrorHandler::AddFormErrors($request->getSession(), $form);
+        return $this->handleRedirect($request);
     }
 
     #[Route("/deleteMovie/{id}", name: "deleteMovie")]
-    public function deleteMovie(Movie $movie, EntityManagerInterface $entityManager): RedirectResponse
+    public function deleteMovie(Movie $movie, EntityManagerInterface $entityManager, Request $request): RedirectResponse
     {
         try
         {
@@ -86,8 +87,14 @@ class MoviesRequestHandler extends AbstractController
             $entityManager->flush();
         }catch (Exception|Error $e)
         {
-            ErrorHandler::AddError("Failed to remove " > $movie->getTitle());
+            ErrorHandler::AddError($request->getSession(), "Failed to remove " > $movie->getTitle());
         }
         return $this->redirectToRoute("home");
+    }
+
+    private function handleRedirect(Request $request) : RedirectResponse
+    {
+        $referer = $request->headers->get("referer");
+        return new RedirectResponse($referer);
     }
 }

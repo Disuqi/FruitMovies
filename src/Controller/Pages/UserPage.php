@@ -10,13 +10,14 @@ use App\Utils\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserPage extends AbstractController
 {
     #[Route("/user/{username}", name:"user")]
     #[Template("user.html.twig")]
-    public function user(User $user) : array
+    public function user(User $user, Request $request) : array
     {
         $editForms = [];
 
@@ -50,7 +51,7 @@ class UserPage extends AbstractController
             "search_form" => $searchForm,
             "edit_forms" => $editForms,
             "add_movie_form" => $addMovieForm,
-            "errors" => ErrorHandler::GetAndClearErrors()
+            "errors" => ErrorHandler::GetAndClearErrors($request->getSession())
         ];
     }
 }

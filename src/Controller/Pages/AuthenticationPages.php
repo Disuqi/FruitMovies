@@ -55,7 +55,7 @@ class AuthenticationPages extends AbstractController
                 $entityManager->flush();
             }catch(Exception|Error $e)
             {
-                ErrorHandler::AddError("Sign Up Failed");
+                ErrorHandler::AddError($request->getSession(), "Sign Up Failed");
             }
 
             $profilePhoto = $form->get("profilePhoto")->getData();
@@ -67,7 +67,7 @@ class AuthenticationPages extends AbstractController
                     $imageSaver->saveImage($user, $profilePhoto);
                 }catch (Exception|Error $e)
                 {
-                    ErrorHandler::AddError("Could not save Profile Image");
+                    ErrorHandler::AddError($request->getSession(), "Could not save Profile Image");
                 }
             }
 
@@ -76,26 +76,26 @@ class AuthenticationPages extends AbstractController
                 $security->login($user);
             }catch (Exception|Error $e)
             {
-                ErrorHandler::AddError("Autologin Failed");
+                ErrorHandler::AddError($request->getSession(), "Autologin Failed");
             }
             return $this->redirectToRoute("home");
         }
 
-        ErrorHandler::AddFormErrors($form);
+        ErrorHandler::AddFormErrors($request->getSession(), $form);
         return $this->render("authentication/signUp.html.twig",
-            ["form" => $form->createView(), "errors" => ErrorHandler::GetAndClearErrors()]);
+            ["form" => $form->createView(), "errors" => ErrorHandler::GetAndClearErrors($request->getSession())]);
     }
 
     #[Route("/signIn", name: "signIn")]
     #[Template("authentication/signIn.html.twig")]
-    public function signIn(AuthenticationUtils $authenticationUtils): array
+    public function signIn(Request $request, AuthenticationUtils $authenticationUtils): array
     {
         $error = $authenticationUtils->getLastAuthenticationError();
-        if($error) ErrorHandler::AddError($error->getMessage());
+        if($error) ErrorHandler::AddError($request->getSession(), $error->getMessage());
 
         $lastUsername = $authenticationUtils->getLastUsername();
         return [ "last_username" => $lastUsername,
-            "errors" => ErrorHandler::GetAndClearErrors()];
+            "errors" => ErrorHandler::GetAndClearErrors($request->getSession())];
     }
 
     #[Route("/signOut", name: "signOut", methods: ["GET"])]

@@ -11,13 +11,14 @@ use App\Utils\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MoviePage extends AbstractController
 {
     #[Route("/movie/{id}", name:"movie")]
     #[Template("movie.html.twig")]
-    public function movie(Movie $movie) : array
+    public function movie(Request $request, Movie $movie) : array
     {
         $addReviewForm = $this->createForm(ReviewFormType::class)->createView();
         $options = [];
@@ -57,7 +58,7 @@ class MoviePage extends AbstractController
             "edit_review_form" => $editReviewForm,
             "search_form" => $searchForm,
             "add_movie_form" => $addMovieForm,
-            "errors" => ErrorHandler::GetAndClearErrors()
+            "errors" => ErrorHandler::GetAndClearErrors($request->getSession())
             ];
     }
 }

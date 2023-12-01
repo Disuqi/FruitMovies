@@ -10,13 +10,14 @@ use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomePage extends AbstractController
 {
     #[Route("/", name:"home")]
     #[Template("home.html.twig")]
-    public function home(MovieRepository $movieRepository) : array
+    public function home(MovieRepository $movieRepository, Request $request) : array
     {
         $options = new MoviesSearchOptions(OrderMoviesBy::Reviews, additionalOrderBy: OrderMoviesBy::Rating, startDate: new \DateTime("-1 month"), endDate: new \DateTime());
         $juiciestPicks = $movieRepository->searchMovies($options)->results;
@@ -30,7 +31,7 @@ class HomePage extends AbstractController
             "juiciestPicks" => $juiciestPicks,
             "search_form" => $searchForm,
             "add_movie_form" => $addMovieForm,
-            "errors" => ErrorHandler::GetAndClearErrors()
+            "errors" => ErrorHandler::GetAndClearErrors($request->getSession())
         ];
     }
 }

@@ -2,41 +2,37 @@
 
 namespace App\Utils\Errors;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class ErrorHandler
 {
-    private static array $errors = [];
-
-    public static function GetAndClearErrors() : array
+    public static function GetAndClearErrors(Session $session) : array
     {
-        $errors = self::$errors;
-        self::$errors = [];
+        $errors = $session->get("errors");
+        if(!$errors) $errors = [];
+        $session->remove("errors");
         return $errors;
     }
 
-    public static function AddFormErrors(FormInterface $form) : void
+    public static function AddFormErrors(Session $session, FormInterface $form) : void
     {
-        $errors = $form->getErrors(true);
-        foreach($errors as $error)
+        $errors = $session->get("errors");
+        if(!$errors) $errors = [];
+        $formErrors = $form->getErrors(true);
+        foreach($formErrors as $fromError)
         {
-            self::AddError($error->getMessage());
+            self::AddError($session, $fromError->getMessage());
         }
     }
-    public static function AddError(string $message) : void
+    public static function AddError(Session $session, string $message) : void
     {
-        $error = new Error(count(self::$errors), $message);
-        self::$errors[] = $error;
-    }
-
-    public static function PopError() : Error
-    {
-        return array_pop(self::$errors);
-    }
-
-    public static function ShiftError() : Error
-    {
-        return array_shift(self::$errors);
+        $errors = $session->get("errors");
+        if(!$errors) $errors = [];
+        $error = new Error(count($errors), $message);
+        $errors[] = $error;
+        $session->set("errors", $errors);
     }
 }

@@ -10,6 +10,7 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UsersRequestHandler extends AbstractController
@@ -34,7 +35,7 @@ class UsersRequestHandler extends AbstractController
     }
 
     #[Route('deleteUser/{id}', name: 'deleteUser')]
-    public function deleteUser(User $user, EntityManagerInterface $entityManager, Security $security) : RedirectResponse
+    public function deleteUser(User $user, EntityManagerInterface $entityManager, Security $security, Request $request) : RedirectResponse
     {
         if($this->getUser() !== $user && !$this->isGranted('ROLE_SUPER_ADMIN'))
             return $this->redirectToRoute('user', ['id' => $user->getId() ]);
@@ -47,7 +48,7 @@ class UsersRequestHandler extends AbstractController
             }
             catch(Exception|Error $e)
             {
-                ErrorHandler::AddError("Could not Sign Out");
+                ErrorHandler::AddError($request->getSession(), "Could not Sign Out");
             }
         }
 
@@ -58,7 +59,7 @@ class UsersRequestHandler extends AbstractController
         }
         catch(Exception|Error $e)
         {
-            ErrorHandler::AddError("Could not delete " . $user->getUsername());
+            ErrorHandler::AddError($request->getSession(),"Could not delete " . $user->getUsername());
         }
 
         return $this->redirectToRoute('home');

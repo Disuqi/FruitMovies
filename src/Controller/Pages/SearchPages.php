@@ -89,7 +89,7 @@ class SearchPages extends AbstractController
         $session->set("lastSearchCategory", $category);
         $session->set("lastSearchOptions", $searchOptions);
 
-        ErrorHandler::AddFormErrors($orderForm);
+        ErrorHandler::AddFormErrors($session, $orderForm);
         return
             [
                 "order_form" => $orderForm,
@@ -99,13 +99,13 @@ class SearchPages extends AbstractController
                 "slug" => $slug,
                 "search_form" => $searchForm,
                 "add_movie_form" => $addMovieForm,
-                "errors" => ErrorHandler::GetAndClearErrors()
+                "errors" => ErrorHandler::GetAndClearErrors($session)
             ];
     }
 
     #[Route("/search/user/{slug}/{page}", name:"searchUser")]
     #[Template("search/searchUser.html.twig")]
-    public function searchUser(UserRepository $userRepository, string $slug, int $page = 1) : array
+    public function searchUser(UserRepository $userRepository, Request $request, string $slug, int $page = 1) : array
     {
         if($slug[0] === "@")
             $slug = substr($slug, 1);
@@ -122,7 +122,7 @@ class SearchPages extends AbstractController
                 "slug" => $slug,
                 "search_form" => $searchForm,
                 "add_movie_form" => $addMovieForm,
-                "errors" => ErrorHandler::GetAndClearErrors()
+                "errors" => ErrorHandler::GetAndClearErrors($request->getSession())
             ];
     }
 }

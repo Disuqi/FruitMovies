@@ -7,6 +7,7 @@ use App\Entity\Review;
 use App\Entity\ReviewVote;
 use App\Form\ReviewFormType;
 use App\Repository\ReviewVoteRepository;
+use App\Utils\Errors\ErrorHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -61,21 +62,28 @@ class ReviewsRequestHandler extends AbstractController
     {
         $reviewVote = $reviewVoteRepository->findOneBy(["user" => $this->getUser()->getId(), "review" => $review->getId()]);
 
-        if(!$reviewVote)
+        try
         {
-            $reviewVote = new ReviewVote();
-            $reviewVote->setReview($review);
-            $reviewVote->setUser($this->getUser());
-        }
-        else if($reviewVote->isLiked() === $liked)
-        {
-            $entityManager->remove($reviewVote);
+            if(!$reviewVote)
+            {
+                $reviewVote = new ReviewVote();
+                $reviewVote->setReview($review);
+                $reviewVote->setUser($this->getUser());
+            }
+            else if($reviewVote->isLiked() === $liked)
+            {
+                $entityManager->remove($reviewVote);
+                $entityManager->flush();
+                return $this->handleRedirect($request);
+            }
+            $reviewVote->setLiked($liked);
+            $entityManager->persist($reviewVote);
             $entityManager->flush();
-            return $this->handleRedirect($request);
         }
-        $reviewVote->setLiked($liked);
-        $entityManager->persist($reviewVote);
-        $entityManager->flush();
+        catch(\Exception|\Error $e)
+        {
+            ErrorHandler::AddError($request->getSession(), "Failed to change vote");
+        }
         return $this->handleRedirect($request);
     }
 
@@ -94,6 +102,7 @@ class ReviewsRequestHandler extends AbstractController
                 print($e->getMessage());
             }
         }
+        ErrorHandler::AddFormErrors($request->getSession(), $form);
         return $this->handleRedirect($request);
     }
 

@@ -27,7 +27,7 @@ class SearchRequestHandler extends AbstractController
             else
                 return $this->redirectToRoute("searchUser", ["slug" => $slug]);
         }
-        ErrorHandler::AddFormErrors($searchForm);
+        ErrorHandler::AddFormErrors($request->getSession(), $searchForm);
         return $this->redirectToRoute("home");
     }
 }
