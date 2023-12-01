@@ -18,7 +18,7 @@ class ErrorHandler
 
     public static function AddFormErrors(FormInterface $form) : void
     {
-        $errors = $form->getErrors();
+        $errors = $form->getErrors(true);
         foreach($errors as $error)
         {
             self::AddError($error->getMessage());

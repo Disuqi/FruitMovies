@@ -5,7 +5,6 @@ namespace App\Controller\RequestHandlers;
 
 use App\Form\SearchFormType;
 use App\Utils\Errors\ErrorHandler;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchRequestHandler extends AbstractController
 {
     #[Route("/search", name: "search")]
-    public function search(Request $request, LoggerInterface $logger) : Response
+    public function search(Request $request) : Response
     {
         $searchForm = $this->createForm(SearchFormType::class);
         $searchForm->handleRequest($request);
@@ -23,7 +22,6 @@ class SearchRequestHandler extends AbstractController
             $formData = $searchForm->getData();
             $slug = $formData["search_box"];
             $searchType = $formData["search_options"];
-            $logger->info("SLUG: " . $slug . " SEARCH TYPE: " . $searchType);
             if($searchType === "movie")
                 return $this->redirectToRoute("searchMovie", ["slug" => $slug]);
             else

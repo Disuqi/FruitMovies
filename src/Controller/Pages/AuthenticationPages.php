@@ -9,7 +9,6 @@ use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -32,7 +31,7 @@ class AuthenticationPages extends AbstractController
      * @return Response
      */
     #[Route("/signUp", name: "signUp")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AuthenticationUtils $authenticationUtils, Security $security, ImageSaver $imageSaver, LoggerInterface $logger): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AuthenticationUtils $authenticationUtils, Security $security, ImageSaver $imageSaver): Response
     {
         $lastUsername = $authenticationUtils->getLastUsername();
         $user = new User();
@@ -92,10 +91,11 @@ class AuthenticationPages extends AbstractController
     public function signIn(AuthenticationUtils $authenticationUtils): array
     {
         $error = $authenticationUtils->getLastAuthenticationError();
-        ErrorHandler::AddError($error->getMessage());
+        if($error) ErrorHandler::AddError($error->getMessage());
 
         $lastUsername = $authenticationUtils->getLastUsername();
-        return [ "last_username" => $lastUsername];
+        return [ "last_username" => $lastUsername,
+            "errors" => ErrorHandler::GetAndClearErrors()];
     }
 
     #[Route("/signOut", name: "signOut", methods: ["GET"])]
