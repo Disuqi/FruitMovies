@@ -1,0 +1,18 @@
+{
+    "name": "awd/image-saver",
+    "description": "Helper bundle to save images for your entities",
+    "version": "0.0.2",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-4": {
+            "AWD\\ImageSaver\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Disuqi",
+            "email": "disuqi.hijazi.7@gmail.com"
+        }
+    ],
+    "require": {}
+}

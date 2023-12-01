@@ -6,9 +6,8 @@ use App\Entity\Movie;
 use App\Entity\MovieCrewMember;
 use App\Form\AddMovieFormType;
 use App\Repository\CrewMemberRepository;
-use App\Repository\MovieCrewMemberRepository;
+use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,7 +20,7 @@ class MoviesRequestHandler extends AbstractController
      * @throws \Exception
      */
     #[Route("/addMovie", name:"addMovie")]
-    public function addMovie(Request $request, CrewMemberRepository $crewMemberRepository, EntityManagerInterface $entityManager) : RedirectResponse
+    public function addMovie(Request $request, CrewMemberRepository $crewMemberRepository, EntityManagerInterface $entityManager, ImageSaver $imageSaver) : RedirectResponse
     {
         $movie = new Movie();
         $form = $this->createForm( AddMovieFormType::class, $movie);
@@ -36,17 +35,7 @@ class MoviesRequestHandler extends AbstractController
             $coverPhoto = $form->get("cover_photo")->getData();
             if($coverPhoto)
             {
-                try
-                {
-                    $dir = $movie->getImagesDirectoryPath();
-                    $filename = "mainCoverPhoto." . $coverPhoto->guessExtension();
-                    $coverPhoto->move($dir, $filename);
-                    $movie->setCoverPhoto($dir . $filename);
-                    $entityManager->flush();
-                }catch(FileException $e)
-                {
-                    print($e);
-                }
+                $imageSaver->saveImage($movie, $coverPhoto);
             }
 
             $directorName = $form->get("director")->getData();

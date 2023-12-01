@@ -4,7 +4,10 @@ namespace App\Controller\Pages;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
+use Error;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -18,8 +21,17 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthenticationPages extends AbstractController
 {
+    /**
+     * @param Request $request
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param EntityManagerInterface $entityManager
+     * @param AuthenticationUtils $authenticationUtils
+     * @param Security $security
+     * @param ImageSaver $imageSaver
+     * @return Response
+     */
     #[Route("/signUp", name: "signUp")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AuthenticationUtils $authenticationUtils, Security $security): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AuthenticationUtils $authenticationUtils, Security $security, ImageSaver $imageSaver, LoggerInterface $logger): Response
     {
         $lastUsername = $authenticationUtils->getLastUsername();
         $user = new User();
@@ -44,18 +56,8 @@ class AuthenticationPages extends AbstractController
 
             if($profilePhoto)
             {
-                try
-                {
-                    $dir = $user->getImagesDirectoryPath();
-                    $filename = "profilePhoto." . $profilePhoto->guessExtension();
-                    $profilePhoto->move($dir, $filename);
-                    $user->setProfileImage($dir . $filename);
-                    $entityManager->flush();
-                }
-                catch(FileException $e)
-                {
-                    print($e);
-                }
+                $imageSaver->saveImage($user, $profilePhoto);
+                $logger->info("SUCCESSFULLY SAVED IMAGE FOR ID: " . $user->getId());
             }
 
             $security->login($user);

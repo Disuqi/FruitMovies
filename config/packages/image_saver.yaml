@@ -1,0 +1,9 @@
+image_saver:
+  entities:
+    User:
+      id: "id"
+      image: "profile_image"
+    Movie:
+      id: "id"
+      image: "cover_photo"
+  handle_entity_manager: true

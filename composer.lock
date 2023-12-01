@@ -4,8 +4,33 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e5f48be5b14a85e4d6667b06bfbd003",
+    "content-hash": "292c357ad2e7149d85398b8274d48040",
     "packages": [
+        {
+            "name": "awd/image-saver",
+            "version": "0.0.2",
+            "dist": {
+                "type": "path",
+                "url": "./bundles/image-saver",
+                "reference": "1f33cd506d9664e56d8371c672f0af9e9ec4cc13"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "AWD\\ImageSaver\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Disuqi",
+                    "email": "disuqi.hijazi.7@gmail.com"
+                }
+            ],
+            "description": "Helper bundle to save images for your entities",
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "doctrine/annotations",
             "version": "2.0.1",

@@ -16,4 +16,9 @@ class AwdImageSaverBundle extends AbstractBundle
     {
         return new AwdImageSaverExtension();
     }
+
+    public function printEntities()
+    {
+        print($this->container->get("handle_entity_manager"));
+    }
 }

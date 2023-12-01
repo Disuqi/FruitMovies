@@ -1,0 +1,7 @@
+parameters:
+
+services:
+  AWD\ImageSaver\ImageSaver:
+    autowire: true
+    autoconfigure: true
+

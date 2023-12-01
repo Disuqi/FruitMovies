@@ -20,6 +20,7 @@ enum Roles : string
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -219,11 +220,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->username;
-    }
-
-    public function getImagesDirectoryPath(): string
-    {
-        return "userData/" . $this->id . "/images/";
     }
 
     public function getVotedReviews(): Collection
