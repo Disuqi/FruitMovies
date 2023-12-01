@@ -4,14 +4,15 @@ namespace App\Controller\Pages;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Utils\Errors\ErrorHandler;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -49,23 +50,41 @@ class AuthenticationPages extends AbstractController
             $user->setDateJoined(new \DateTimeImmutable());
             $user->setRestricted(false);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            try
+            {
+                $entityManager->persist($user);
+                $entityManager->flush();
+            }catch(Exception|Error $e)
+            {
+                ErrorHandler::AddError("Sign Up Failed");
+            }
 
             $profilePhoto = $form->get("profilePhoto")->getData();
 
             if($profilePhoto)
             {
-                $imageSaver->saveImage($user, $profilePhoto);
-                $logger->info("SUCCESSFULLY SAVED IMAGE FOR ID: " . $user->getId());
+                try
+                {
+                    $imageSaver->saveImage($user, $profilePhoto);
+                }catch (Exception|Error $e)
+                {
+                    ErrorHandler::AddError("Could not save Profile Image");
+                }
             }
 
-            $security->login($user);
+            try
+            {
+                $security->login($user);
+            }catch (Exception|Error $e)
+            {
+                ErrorHandler::AddError("Autologin Failed");
+            }
             return $this->redirectToRoute("home");
         }
 
+        ErrorHandler::AddFormErrors($form);
         return $this->render("authentication/signUp.html.twig",
-            ["form" => $form->createView(),]);
+            ["form" => $form->createView(), "errors" => ErrorHandler::GetAndClearErrors()]);
     }
 
     #[Route("/signIn", name: "signIn")]
@@ -73,10 +92,10 @@ class AuthenticationPages extends AbstractController
     public function signIn(AuthenticationUtils $authenticationUtils): array
     {
         $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        ErrorHandler::AddError($error->getMessage());
 
-        return [ "last_username" => $lastUsername,
-            "error" => $error,];
+        $lastUsername = $authenticationUtils->getLastUsername();
+        return [ "last_username" => $lastUsername];
     }
 
     #[Route("/signOut", name: "signOut", methods: ["GET"])]

@@ -76,7 +76,7 @@ class Movie
 
     public function getImagesDirectoryPath() : string
     {
-        return "MovieData/" . $this->id . "/images/";
+        return "MovieImages/" . $this->id . "/images/";
     }
 
     public function getCoverPhoto(PhotoSize $size = PhotoSize::Medium): ?string

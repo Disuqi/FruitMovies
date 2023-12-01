@@ -15,6 +15,13 @@
     </head>
     <body class="bg-black text-white">
         {% block body %}{% endblock %}
+        <div class="absolute w-screen top-0 left-0 flex flex-col justify-center items-center mt-5">
+            {% if errors is defined %}
+                {% for error in errors %}
+                    {% include 'elements/errorToast.html.twig' %}
+                {% endfor %}
+            {%  endif %}
+        </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.min.js"></script>
     </body>
 </html>

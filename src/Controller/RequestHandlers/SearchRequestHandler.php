@@ -4,13 +4,7 @@ namespace App\Controller\RequestHandlers;
 
 
 use App\Form\SearchFormType;
-use App\Repository\MovieRepository;
-use App\Repository\UserRepository;
-use App\Utils\Search\OrderMoviesBy;
-use App\Utils\Search\MoviesSearchCategory;
-use App\Utils\Search\MoviesSearchOptions;
-use App\Utils\Search\SortOrder;
-use Monolog\Logger;
+use App\Utils\Errors\ErrorHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +29,7 @@ class SearchRequestHandler extends AbstractController
             else
                 return $this->redirectToRoute("searchUser", ["slug" => $slug]);
         }
+        ErrorHandler::AddFormErrors($searchForm);
         return $this->redirectToRoute("home");
     }
 }

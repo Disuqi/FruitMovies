@@ -10,7 +10,6 @@
             </div>
                 {{ form_start(form) }}
                     <div class="flex flex-col gap-4">
-                        {{ form_errors(form.profilePhoto) }}
                         <div class="flex justify-center items-center">
                             <label id="fileInputLabel" for="{{ form.profilePhoto.vars.id }}" class="cursor-pointer border-2 border-gray-800 w-20 h-20 rounded-full flex justify-center items-center align-middle hover:text-indigo-600 bg-cover">
                                 <span id="no-image-svg" class="w-8 h-8">
@@ -20,7 +19,6 @@
                             {{ form_widget(form.profilePhoto, { 'attr' : { 'onchange': 'previewImage("' ~ form.profilePhoto.vars.id ~ '")'}}) }}
                         </div>
                         <div>
-                            {{ form_errors(form.username) }}
                             <div class="sm:col-span-4">
                                 <label for="username" class="block text-sm font-medium leading-6 text-white">Username</label>
                                 <div class="mt-2">
@@ -32,7 +30,6 @@
                             </div>
                         </div>
                         <div>
-                            {{ form_errors(form.email) }}
                             <div class="sm:col-span-4">
                                 <label for="password" class="block text-sm font-medium leading-6 text-white">Email</label>
                                 <div class="mt-2">
@@ -43,7 +40,6 @@
                             </div>
                         </div>
                         <div>
-                            {{ form_errors(form.plainPassword) }}
                             <div class="sm:col-span-4">
                                 <label for="password" class="block text-sm font-medium leading-6 text-white">Password</label>
                                 <div class="mt-2">
@@ -54,7 +50,6 @@
                             </div>
                         </div>
                         <div class="flex flex-row gap-2 justify-center items-center">
-                            {{ form_errors(form.agreeTerms) }}
                             <h2>Agree Terms</h2>
                             {{ form_widget(form.agreeTerms) }}
                         </div>

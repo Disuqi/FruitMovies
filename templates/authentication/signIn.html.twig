@@ -8,9 +8,6 @@
             <div>
                 <a href="{{ path('home') }}" class="font-black text-3xl">FILM FRUITS</a>
             </div>
-            {% if error %}
-                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
             <form class="text-white flex flex-col gap-5 mt-8" action="{{ path('signIn') }}" method="post">
                 <div>
                     <div class="sm:col-span-4">

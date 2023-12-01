@@ -6,4 +6,5 @@ image_saver:
     Movie:
       id: "id"
       image: "cover_photo"
+      base_dir: "MovieImages"
   handle_entity_manager: true

@@ -7,6 +7,7 @@ use App\Entity\Movie;
 use App\Form\AddMovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
+use App\Utils\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,13 +49,15 @@ class MoviePage extends AbstractController
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
             $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+
         return [
             "movie" => $movie,
             "reviews" => $reviews,
             "addReviewForm" => $addReviewForm,
             "edit_review_form" => $editReviewForm,
             "search_form" => $searchForm,
-            "add_movie_form" => $addMovieForm
+            "add_movie_form" => $addMovieForm,
+            "errors" => ErrorHandler::GetAndClearErrors()
             ];
     }
 }

@@ -6,10 +6,12 @@ use App\Entity\Movie;
 use App\Entity\MovieCrewMember;
 use App\Form\AddMovieFormType;
 use App\Repository\CrewMemberRepository;
+use App\Utils\Errors\ErrorHandler;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
+use Error;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -71,14 +73,21 @@ class MoviesRequestHandler extends AbstractController
             }
             $entityManager->flush();
         }
+        ErrorHandler::AddFormErrors($form);
         return $this->redirectToRoute("movie", ["id" => $movie->getId()]);
     }
 
     #[Route("/deleteMovie/{id}", name: "deleteMovie")]
     public function deleteMovie(Movie $movie, EntityManagerInterface $entityManager): RedirectResponse
     {
-        $entityManager->remove($movie);
-        $entityManager->flush();
+        try
+        {
+            $entityManager->remove($movie);
+            $entityManager->flush();
+        }catch (Exception|Error $e)
+        {
+            ErrorHandler::AddError("Failed to remove " > $movie->getTitle());
+        }
         return $this->redirectToRoute("home");
     }
 }

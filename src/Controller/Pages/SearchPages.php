@@ -7,6 +7,7 @@ use App\Form\OrderMoviesFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Repository\UserRepository;
+use App\Utils\Errors\ErrorHandler;
 use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\MoviesSearchCategory;
 use App\Utils\Search\MoviesSearchOptions;
@@ -78,7 +79,7 @@ class SearchPages extends AbstractController
             $searchOptions->orderBy = $searchFormOptions->orderBy;
             $searchOptions->sortOrder = $searchFormOptions->sortOrder;
         }
-        elseif($lastSearchCategory === $category && $lastSearchOptions !== null && $lastSearchOptions != null)
+        elseif($lastSearchCategory === $category && $lastSearchCategory !== null && $lastSearchOptions != null)
         {
             $lastSearchOptions->page = $page;
             $searchOptions = $lastSearchOptions;
@@ -88,6 +89,7 @@ class SearchPages extends AbstractController
         $session->set("lastSearchCategory", $category);
         $session->set("lastSearchOptions", $searchOptions);
 
+        ErrorHandler::AddFormErrors($orderForm);
         return
             [
                 "order_form" => $orderForm,
@@ -96,7 +98,8 @@ class SearchPages extends AbstractController
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
                 "search_form" => $searchForm,
-                "add_movie_form" => $addMovieForm
+                "add_movie_form" => $addMovieForm,
+                "errors" => ErrorHandler::GetAndClearErrors()
             ];
     }
 
@@ -118,7 +121,8 @@ class SearchPages extends AbstractController
                 "total_pages" => $searchResult->total_pages,
                 "slug" => $slug,
                 "search_form" => $searchForm,
-                "add_movie_form" => $addMovieForm
+                "add_movie_form" => $addMovieForm,
+                "errors" => ErrorHandler::GetAndClearErrors()
             ];
     }
 }

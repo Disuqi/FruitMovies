@@ -5,9 +5,9 @@ namespace App\Controller\Pages;
 use App\Form\AddMovieFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
+use App\Utils\Errors\ErrorHandler;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
-use AWD\ImageSaver\ImageSaver;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +16,7 @@ class HomePage extends AbstractController
 {
     #[Route("/", name:"home")]
     #[Template("home.html.twig")]
-    public function home(MovieRepository $movieRepository, ImageSaver $imageSaver) : array
+    public function home(MovieRepository $movieRepository) : array
     {
         $options = new MoviesSearchOptions(OrderMoviesBy::Reviews, additionalOrderBy: OrderMoviesBy::Rating, startDate: new \DateTime("-1 month"), endDate: new \DateTime());
         $juiciestPicks = $movieRepository->searchMovies($options)->results;
@@ -29,6 +29,8 @@ class HomePage extends AbstractController
             "pickOfTheMonth" => $movieOfTheMonth,
             "juiciestPicks" => $juiciestPicks,
             "search_form" => $searchForm,
-            "add_movie_form" => $addMovieForm];
+            "add_movie_form" => $addMovieForm,
+            "errors" => ErrorHandler::GetAndClearErrors()
+        ];
     }
 }

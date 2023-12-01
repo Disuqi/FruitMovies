@@ -6,8 +6,8 @@ use App\Entity\User;
 use App\Form\AddMovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
+use App\Utils\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
-use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +16,7 @@ class UserPage extends AbstractController
 {
     #[Route("/user/{username}", name:"user")]
     #[Template("user.html.twig")]
-    public function user(User $user, LoggerInterface $logger) : array
+    public function user(User $user) : array
     {
         $editForms = [];
 
@@ -36,8 +36,6 @@ class UserPage extends AbstractController
                         "score" => $review->getScore(),
                         "comment" => $review->getComment(),
                     ];
-                $logger->info("REVIEW: " . $review->getId() . " | SCORE: " . $review->getScore() . " | COMMENT: " . $review->getComment());
-                $logger->info("OPTIONS " . " | SCORE: " . $options['score'] . " | COMMENT: " . $options['comment']);
 
                 $editForms[$review->getId()] = $this->createForm(ReviewFormType::class, options: $options)->createView();
             }
@@ -47,6 +45,12 @@ class UserPage extends AbstractController
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
             $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
-        return ["user" => $user, "reviews" => $reviews, "search_form" => $searchForm, "edit_forms" => $editForms, "add_movie_form" => $addMovieForm];
+        return ["user" => $user,
+            "reviews" => $reviews,
+            "search_form" => $searchForm,
+            "edit_forms" => $editForms,
+            "add_movie_form" => $addMovieForm,
+            "errors" => ErrorHandler::GetAndClearErrors()
+        ];
     }
 }

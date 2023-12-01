@@ -3,12 +3,14 @@
 namespace App\Controller\RequestHandlers;
 
 use App\Entity\User;
+use App\Utils\Errors\ErrorHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Error;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Config\SecurityConfig;
 
 class UsersRequestHandler extends AbstractController
 {
@@ -39,12 +41,25 @@ class UsersRequestHandler extends AbstractController
 
         if($this->getUser() === $user)
         {
-            $security->logout(false);
+            try
+            {
+                $security->logout(false);
+            }
+            catch(Exception|Error $e)
+            {
+                ErrorHandler::AddError("Could not Sign Out");
+            }
         }
 
-        $entityManager->remove($user);
-        $entityManager->flush();
-
+        try
+        {
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
+        catch(Exception|Error $e)
+        {
+            ErrorHandler::AddError("Could not delete " . $user->getUsername());
+        }
 
         return $this->redirectToRoute('home');
     }
