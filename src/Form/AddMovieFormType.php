@@ -55,7 +55,7 @@ class AddMovieFormType extends AbstractType
                 "entry_options" => ["label" => false, "required" => false]
             ])
             ->add("submit", SubmitType::class)
-            ->setAction("addMovie");
+            ->setAction("/addMovie");
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\UniqueConstraint(name: "movie_user_unique", columns: ["movie_id", "user_id"])]
@@ -34,6 +35,7 @@ class Review
     #[ORM\Column]
     private ?\DateTimeImmutable $date_reviewed = null;
 
+    #[Serializer\Exclude]
     #[ORM\OneToMany(mappedBy: "review", targetEntity: ReviewVote::class)]
     private Collection $reviewVotes;
 

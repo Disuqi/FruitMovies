@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\Utils;
 use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\SearchResult;
@@ -13,7 +14,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class MovieRepository extends ServiceEntityRepository
 {
-    public const PAGE_SIZE = 18;
     private const AVERAGE_RATING_NAME = "average_rating";
     private const REVIEW_COUNT_NAME = "review_count";
     private const REVIEW_TABLE_ALIAS = "r";
@@ -47,7 +47,7 @@ class MovieRepository extends ServiceEntityRepository
 
 
         $totalCount = $countQb->getQuery()->getSingleScalarResult();
-        $totalPages = ceil($totalCount/self::PAGE_SIZE);
+        $totalPages = ceil($totalCount/PAGE_SIZE);
 
         if($totalPages == 0)
         {
@@ -61,8 +61,8 @@ class MovieRepository extends ServiceEntityRepository
 
         if($options->page > 0)
         {
-            $qb->setFirstResult(($options->page - 1) * self::PAGE_SIZE)
-                ->setMaxResults(self::PAGE_SIZE);
+            $qb->setFirstResult(($options->page - 1) * PAGE_SIZE)
+                ->setMaxResults(PAGE_SIZE);
         }
         $results = $qb->getQuery()->getResult();
 

@@ -41,35 +41,41 @@ class MoviesRequestHandler extends AbstractController
             }
 
             $directorName = $form->get("director")->getData();
-            $director = $crewMemberRepository->findOneBy(["name" => $directorName, "role" => "director"]);
-            if(!$director)
+            if ($directorName)
             {
-                $director = new CrewMember();
-                $director->setName($directorName);
-                $director->setRole("director");
-                $entityManager->persist($director);
-            }
-            $directorRelation = new MovieCrewMember();
-            $directorRelation->setCrewMember($director);
-            $directorRelation->setMovie($movie);
+                $director = $crewMemberRepository->findOneBy(["name" => $directorName, "role" => "director"]);
+                if(!$director)
+                {
+                    $director = new CrewMember();
+                    $director->setName($directorName);
+                    $director->setRole("director");
+                    $entityManager->persist($director);
+                }
+                $directorRelation = new MovieCrewMember();
+                $directorRelation->setCrewMember($director);
+                $directorRelation->setMovie($movie);
 
-            $entityManager->persist($directorRelation);
+                $entityManager->persist($directorRelation);
+            }
 
             $actorNames = $form->get("actors")->getData();
-            foreach($actorNames as $name)
+            if($actorNames)
             {
-                $actor = $crewMemberRepository->findOneBy(["name" => $name, "role" => "actor"]);
-                if(!$actor)
+                foreach($actorNames as $name)
                 {
-                    $actor = new CrewMember();
-                    $actor->setName($name);
-                    $actor->setRole("actor");
-                    $entityManager->persist($actor);
+                    $actor = $crewMemberRepository->findOneBy(["name" => $name, "role" => "actor"]);
+                    if(!$actor)
+                    {
+                        $actor = new CrewMember();
+                        $actor->setName($name);
+                        $actor->setRole("actor");
+                        $entityManager->persist($actor);
+                    }
+                    $movieActorRelation = new MovieCrewMember();
+                    $movieActorRelation->setMovie($movie);
+                    $movieActorRelation->setCrewMember($actor);
+                    $entityManager->persist($movieActorRelation);
                 }
-                $movieActorRelation = new MovieCrewMember();
-                $movieActorRelation->setMovie($movie);
-                $movieActorRelation->setCrewMember($actor);
-                $entityManager->persist($movieActorRelation);
             }
             $entityManager->flush();
             return $this->redirectToRoute("movie", ["id" => $movie->getId()]);

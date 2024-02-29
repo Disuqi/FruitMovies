@@ -19,14 +19,13 @@ class ErrorHandler
 
     public static function AddFormErrors(Session $session, FormInterface $form) : void
     {
-        $errors = $session->get("errors");
-        if(!$errors) $errors = [];
         $formErrors = $form->getErrors(true);
         foreach($formErrors as $fromError)
         {
             self::AddError($session, $fromError->getMessage());
         }
     }
+
     public static function AddError(Session $session, string $message) : void
     {
         $errors = $session->get("errors");

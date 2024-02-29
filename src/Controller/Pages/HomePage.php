@@ -8,6 +8,7 @@ use App\Repository\MovieRepository;
 use App\Utils\Errors\ErrorHandler;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +18,15 @@ class HomePage extends AbstractController
 {
     #[Route("/", name:"home")]
     #[Template("home.html.twig")]
-    public function home(MovieRepository $movieRepository, Request $request) : array
+    public function home(MovieRepository $movieRepository, Request $request, LoggerInterface $logger) : array
     {
         $options = new MoviesSearchOptions(OrderMoviesBy::Reviews, additionalOrderBy: OrderMoviesBy::Rating, startDate: new \DateTime("-1 month"), endDate: new \DateTime());
         $juiciestPicks = $movieRepository->searchMovies($options)->results;
+        while(count($juiciestPicks) <= 10)
+        {
+            $options->startDate->modify("-1 month");
+            $juiciestPicks = $movieRepository->searchMovies($options)->results;
+        }
         $movieOfTheMonth = array_shift($juiciestPicks);
         $searchForm = $this->createForm(SearchFormType::class)->createView();
         $addMovieForm = null;

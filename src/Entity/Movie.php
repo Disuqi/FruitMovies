@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\PseudoTypes\PositiveInteger;
+use JMS\Serializer\Annotation as Serializer;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
 class Movie
@@ -33,9 +33,11 @@ class Movie
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $release_date = null;
 
+    #[Serializer\Exclude]
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: Review::class)]
     private Collection $reviews;
 
+    #[Serializer\Exclude]
     #[ORM\OneToMany(mappedBy: 'movie', targetEntity: MovieCrewMember::class)]
     private Collection $crewRelations;
 

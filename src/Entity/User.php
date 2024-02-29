@@ -5,8 +5,8 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,9 +31,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $username;
 
+    #[Serializer\Exclude]
     #[ORM\Column(length: 255, nullable: false)]
     private string $password;
 
+    #[Serializer\Exclude]
     #[ORM\Column(length: 255, nullable: false)]
     private string $email;
 
@@ -46,13 +48,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile_image = null;
 
+    #[Serializer\Exclude]
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $roles = [];
 
-
+    #[Serializer\Exclude]
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Review::class)]
     private Collection $reviews;
 
+    #[Serializer\Exclude]
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ReviewVote::class)]
     private Collection $votedReviews;
 
