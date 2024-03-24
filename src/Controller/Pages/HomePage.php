@@ -2,7 +2,7 @@
 
 namespace App\Controller\Pages;
 
-use App\Form\AddMovieFormType;
+use App\Form\MovieFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Utils\Errors\ErrorHandler;
@@ -31,7 +31,7 @@ class HomePage extends AbstractController
         $searchForm = $this->createForm(SearchFormType::class)->createView();
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
-            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+            $addMovieForm = $this->createForm(MovieFormType::class)->createView();
         return [
             "pickOfTheMonth" => $movieOfTheMonth,
             "juiciestPicks" => $juiciestPicks,

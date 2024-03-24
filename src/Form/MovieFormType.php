@@ -3,9 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Movie;
-use App\Repository\CrewMemberRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -16,7 +14,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
-class AddMovieFormType extends AbstractType
+class MovieFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -33,12 +31,14 @@ class AddMovieFormType extends AbstractType
                             ],
                             "mimeTypesMessage" => "Please upload a valid image file (png, jpg, jpeg)"])]])
             ->add("title")
+            ->add("overview")
             ->add("running_time", IntegerType::class,  [
+                "required" => false,
                 "attr" => ["min" => 0]
             ])
-            ->add("overview")
             ->add("release_date", DateType::class,
                 [
+                    "required" => false,
                     "mapped" => false,
                 ])
             ->add("director", TextType::class,

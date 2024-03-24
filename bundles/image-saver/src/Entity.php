@@ -3,12 +3,10 @@
 namespace AWD\ImageSaver;
 
 use AWD\ImageSaver\Errors\InvalidEntity;
-use Monolog\Logger;
-use Psr\Log\LoggerInterface;
 
 class Entity
 {
-    private mixed $entity;
+    public readonly mixed $entity;
 
     private ?string $id = null;
     private ?string $image = null;

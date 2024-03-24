@@ -40,8 +40,8 @@ class ReviewsRequestHandler extends AbstractController
         return $this->updateReview($review, $request, $entityManager);
     }
 
-    #[Route("/deleteReview/{id}", name:"deleteReview")]
-    public function deleteReview(Review $review, Request $request, ReviewVoteRepository $reviewVoteRepository, EntityManagerInterface $entityManager) : RedirectResponse
+    #[Route("/removeReview/{id}", name:"removeReview")]
+    public function removeReview(Review $review, Request $request, ReviewVoteRepository $reviewVoteRepository, EntityManagerInterface $entityManager) : RedirectResponse
     {
         $movieId = $review->getMovie()->getId();
         if($this->isGranted("ROLE_ADMIN") || $this->getUser() === $review->getUser())

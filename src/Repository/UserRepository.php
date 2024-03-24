@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\User;
 use App\Utils\Search\SearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

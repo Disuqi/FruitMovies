@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Utils;
-
-
+namespace App\Utils\Constants;
 
 enum PhotoSize : string
 {

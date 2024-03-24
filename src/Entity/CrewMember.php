@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CrewMemberRepository;
-use App\Utils\PhotoSize;
+use App\Utils\Constants\PhotoSize;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CrewMemberRepository::class)]

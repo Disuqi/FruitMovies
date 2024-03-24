@@ -2,31 +2,37 @@
 
 namespace App\Form;
 
-use App\Entity\Review;
+use App\Entity\Movie;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
-class ReviewApiFormType extends AbstractType
+class MovieApiFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add("score", IntegerType::class,
+            ->add("title")
+            ->add("overview")
+            ->add("running_time", IntegerType::class,  [
+                "required" => false,
+                "attr" => ["min" => 0]
+            ])
+            ->add("release_date", TextType::class,
                 [
-                    "attr" => ["min" => 0, "max" => 10]
-                ])
-            ->add("comment", TextType::class)
-            ->add("user_id", IntegerType::class, ["mapped" => false])
-            ->add("movie_id", IntegerType::class, ["mapped" => false]);
+                    "required" => false,
+                    "mapped" => false,
+                ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            "data_class" => Review::class,
+            "data_class" => Movie::class,
             "csrf_protection" => false,
         ]);
     }

@@ -2,15 +2,15 @@
 
 namespace App\Controller\Pages;
 
-use App\Form\AddMovieFormType;
+use App\Form\MovieFormType;
 use App\Form\OrderMoviesFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Repository\UserRepository;
 use App\Utils\Errors\ErrorHandler;
-use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\MoviesSearchCategory;
 use App\Utils\Search\MoviesSearchOptions;
+use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\SortOrder;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,7 +30,7 @@ class SearchPages extends AbstractController
         $addMovieForm = null;
 
         if($this->isGranted("ROLE_ADMIN"))
-            $addMovieForm = $this->createForm(AddMovieFormType::class);
+            $addMovieForm = $this->createForm(MovieFormType::class);
 
         try
         {
@@ -113,7 +113,7 @@ class SearchPages extends AbstractController
         $searchForm = $this->createForm(SearchFormType::class)->createView();
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
-            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+            $addMovieForm = $this->createForm(MovieFormType::class)->createView();
         return
             [
                 "users" => $searchResult->results,

@@ -34,7 +34,10 @@ class ReviewRepository extends ServiceEntityRepository
     public function getTotalPages() : int
     {
         $totalCount = $this->createQueryBuilder("m")
-            ->select("m")->select("COUNT(DISTINCT m.id)")->getQuery()->getSingleScalarResult();
+            ->select("m")
+            ->select("COUNT(DISTINCT m.id)")
+            ->getQuery()
+            ->getSingleScalarResult();
         return ceil($totalCount/PAGE_SIZE);
     }
 }

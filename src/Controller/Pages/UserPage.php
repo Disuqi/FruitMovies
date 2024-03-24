@@ -3,7 +3,7 @@
 namespace App\Controller\Pages;
 
 use App\Entity\User;
-use App\Form\AddMovieFormType;
+use App\Form\MovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
 use App\Utils\Errors\ErrorHandler;
@@ -45,7 +45,7 @@ class UserPage extends AbstractController
         $searchForm = $this->createForm(SearchFormType::class);
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
-            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+            $addMovieForm = $this->createForm(MovieFormType::class)->createView();
         return ["user" => $user,
             "reviews" => $reviews,
             "search_form" => $searchForm,

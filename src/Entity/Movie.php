@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MovieRepository;
-use App\Utils\PhotoSize;
+use App\Utils\Constants\PhotoSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,7 +21,7 @@ class Movie
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $running_time = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -30,7 +30,7 @@ class Movie
     #[ORM\Column(type: Types::TEXT)]
     private ?string $overview = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $release_date = null;
 
     #[Serializer\Exclude]

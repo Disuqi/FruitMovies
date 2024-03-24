@@ -4,7 +4,7 @@ namespace App\Controller\Pages;
 
 
 use App\Entity\Movie;
-use App\Form\AddMovieFormType;
+use App\Form\MovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
 use App\Utils\Errors\ErrorHandler;
@@ -49,7 +49,7 @@ class MoviePage extends AbstractController
         $searchForm = $this->createForm(SearchFormType::class)->createView();
         $addMovieForm = null;
         if($this->isGranted("ROLE_ADMIN"))
-            $addMovieForm = $this->createForm(AddMovieFormType::class)->createView();
+            $addMovieForm = $this->createForm(MovieFormType::class)->createView();
 
         return [
             "movie" => $movie,

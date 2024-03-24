@@ -4,13 +4,14 @@ namespace App\Controller\RequestHandlers;
 use App\Entity\CrewMember;
 use App\Entity\Movie;
 use App\Entity\MovieCrewMember;
-use App\Form\AddMovieFormType;
+use App\Form\MovieFormType;
 use App\Repository\CrewMemberRepository;
 use App\Utils\Errors\ErrorHandler;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class MoviesRequestHandler extends AbstractController
     public function addMovie(Request $request, CrewMemberRepository $crewMemberRepository, EntityManagerInterface $entityManager, ImageSaver $imageSaver) : RedirectResponse
     {
         $movie = new Movie();
-        $form = $this->createForm( AddMovieFormType::class, $movie);
+        $form = $this->createForm( MovieFormType::class, $movie);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid())
@@ -84,11 +85,12 @@ class MoviesRequestHandler extends AbstractController
         return $this->handleRedirect($request);
     }
 
-    #[Route("/deleteMovie/{id}", name: "deleteMovie")]
-    public function deleteMovie(Movie $movie, EntityManagerInterface $entityManager, Request $request): RedirectResponse
+    #[Route("/removeMovie/{id}", name: "removeMovie")]
+    public function removeMovie(Movie $movie, EntityManagerInterface $entityManager, ImageSaver $imageSaver, Request $request): RedirectResponse
     {
         try
         {
+            $imageSaver->deleteImage($movie);
             $entityManager->remove($movie);
             $entityManager->flush();
         }catch (Exception|Error $e)

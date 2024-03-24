@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionException;
+use function PHPUnit\Framework\fileExists;
 
 class ImageSaver
 {
@@ -41,11 +42,37 @@ class ImageSaver
         $filename = $entityData["image"] . '.' . $ext;
 
         $data->move($dirPath, $filename);
-        $imageSaverEntity->setImage($dirPath . $filename);
+        $path = $dirPath . $filename;
+        $this->submit($imageSaverEntity, $path);
+    }
+
+    /**
+     * @throws UnsupportedEntity
+     * @throws InvalidEntity
+     * @throws ReflectionException
+     */
+    public function deleteImage(mixed $entity): int
+    {
+        $entityData = $this->getEntityData($entity);
+        $imageSaverEntity = new Entity($entity, $entityData["id"], $entityData["image"]);
+
+        $path = $imageSaverEntity->getImage();
+        if(file_exists($path))
+        {
+            unlink($path);
+            $this->submit($imageSaverEntity, null);
+            return 1;
+        }
+        return 0;
+    }
+
+    private function submit(Entity $imageSaverEntity, $imagePath)
+    {
+        $imageSaverEntity->setImage(null);
 
         if($this->entityManager)
         {
-            $this->entityManager->persist($entity);
+            $this->entityManager->persist($imageSaverEntity->entity);
             $this->entityManager->flush();
         }
     }

@@ -15,7 +15,7 @@
     </head>
     <body class="bg-black text-white">
         {% block body %}{% endblock %}
-        <div class="absolute w-screen top-0 left-0 flex flex-col justify-center items-center mt-5">
+        <div class="absolute w-screen top-0 left-0 flex flex-col justify-center items-center mt-5 z-50">
             {% if errors is defined %}
                 {% for error in errors %}
                     {% include 'elements/errorToast.html.twig' %}

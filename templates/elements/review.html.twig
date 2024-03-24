@@ -45,7 +45,7 @@
                 {% include 'modals/addEditReview.html.twig' with {'form': edit_review_form, 'formId': 'edit-review-modal-' ~ review.getId(), 'formAction': path('editReview', {'id': review.getId()})} %}
             {% endif %}
             {% if is_granted('ROLE_ADMIN') or user == app.user %}
-                <a href="{{ path('deleteReview', {'id': review.getId() }) }}"  class="w-6 h-6 text-red-600 hover:text-red-500">
+                <a href="{{ path('removeReview', {'id': review.getId() }) }}"  class="w-6 h-6 text-red-600 hover:text-red-500">
                     {{ include('svgs/bin.svg') }}
                 </a>
             {% endif %}

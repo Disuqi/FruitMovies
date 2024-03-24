@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Movie;
 use App\Utils;
-use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\MoviesSearchOptions;
+use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\SearchResult;
 use App\Utils\Search\SortOrder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -21,6 +21,15 @@ class MovieRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Movie::class);
+    }
+
+    public function getTotalPages() : int
+    {
+        $totalCount = $this->createQueryBuilder("m")
+            ->select("COUNT(DISTINCT m.id)")
+            ->getQuery()
+            ->getSingleScalarResult();
+        return ceil($totalCount/PAGE_SIZE);
     }
 
     public function searchMovies(MoviesSearchOptions $options)
