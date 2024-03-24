@@ -5,15 +5,11 @@
     <div class="container mx-auto">
         <div class="mt-8 mb-4">
             {{ form_start(order_form) }}
-                <div class="flex flex-row items-center justify-between">
-                    <div class="flex flex-row gap-2 items-center justify-center">
+                <div class="flex flex-row items-center justify-start gap-2">
                         {{ form_label(order_form.orderBy) }}
                         {{ form_widget(order_form.orderBy, {'attr': {'class' : 'rounded-md text-gray-200 bg-gray-900 cursor-pointer'}}) }}
                         {{ form_widget(order_form.sortOrder, {'attr': {'class': 'rounded-md text-gray-200 bg-gray-900 cursor-pointer'}}) }}
-                    </div>
-                    <div class="flex items-center justify-center">
                         {{ form_widget(order_form.apply, {'attr': {'class': 'rounded-md bg-indigo-500 hover:bg-indigo-400 py-2 px-4'}}) }}
-                    </div>
                 </div>
             {{ form_end(order_form) }}
         </div>
