@@ -7,7 +7,7 @@ use App\Form\OrderMoviesFormType;
 use App\Form\SearchFormType;
 use App\Repository\MovieRepository;
 use App\Repository\UserRepository;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use App\Utils\Search\MoviesSearchCategory;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;

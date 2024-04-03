@@ -6,19 +6,91 @@ use App\Entity\Movie;
 use App\Entity\MovieCrewMember;
 use App\Form\MovieFormType;
 use App\Repository\CrewMemberRepository;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Clients\OsmClient;
+use App\Services\Clients\TmdbClient;
+use App\Services\Errors\ErrorHandler;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MoviesRequestHandler extends AbstractController
 {
+    #[Route("/cinemas", name: "cinemas")]
+    public function findCinemas(Request $request, OsmClient $osm): Response
+    {
+        $lat = $request->headers->get("lat");
+        $long = $request->headers->get("long");
+        $range = 1000;
+        try
+        {
+            do
+            {
+                $cinemas = $osm->findCinemas($lat, $long, $range);
+                $range += 1000;
+                if($range >= 20000)
+                    break;
+            }
+            while(count($cinemas) < 5);
+            return new Response(json_encode($cinemas), Response::HTTP_OK);
+        }
+        catch(Error $e)
+        {
+            return new Response("Something went wrong", Response::HTTP_FAILED_DEPENDENCY);
+        }
+    }
+
+    #[Route("/search_tmdb", name: "searchTmdb")]
+    public function searchTmdb(Request $request, TmdbClient $tmdb): Response
+    {
+        $searchQuery = $request->headers->get("searchQuery");
+        $searchResults = $tmdb->searchMovies($searchQuery);
+        return new Response(json_encode(["results"=> $searchResults]), Response::HTTP_OK);
+    }
+
+    #[Route("/search_movie_directors", name: "searchMovieDirectors")]
+    public function searchMovieDirectors(Request $request, TmdbClient $tmdb): Response
+    {
+        $searchQuery = $request->headers->get("movieTitle");
+        if($searchQuery == null)
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+
+        $movies = $tmdb->searchMovies($searchQuery);
+        $results = [];
+        foreach($movies as $movie)
+        {
+            $director = $tmdb->getDirector($movie->id);
+            if($director)
+                $results[] = $director;
+        }
+        return new Response(json_encode(["results"=> $results]), Response::HTTP_OK);
+    }
+
+    #[Route("/search_movie_cast", name: "searchMovieCast")]
+    public function searchMovieCast(Request $request, TmdbClient $tmdb): Response
+    {
+        $searchQuery = $request->headers->get("movieTitle");
+        $movies = $tmdb->searchMovies($searchQuery);
+        $results = [];
+        foreach($movies as $movie)
+        {
+            $cast = $tmdb->getCast($movie->id);
+            if($cast)
+            {
+                foreach($cast as $actor)
+                {
+                    $results[] = $actor;
+                }
+            }
+        }
+        return new Response(json_encode(["results"=> $results]), Response::HTTP_OK);
+    }
+
     /**
      * @throws \Exception
      */
@@ -31,7 +103,8 @@ class MoviesRequestHandler extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $movie->setReleaseDate(\DateTimeImmutable::createFromMutable($form->get("release_date")->getData()));
+            if($form->get("release_date")->getData())
+                $movie->setReleaseDate(\DateTimeImmutable::createFromMutable($form->get("release_date")->getData()));
             $entityManager->persist($movie);
             $entityManager->flush();
 
@@ -95,7 +168,7 @@ class MoviesRequestHandler extends AbstractController
             $entityManager->flush();
         }catch (Exception|Error $e)
         {
-            ErrorHandler::AddError($request->getSession(), "Failed to remove " > $movie->getTitle());
+            ErrorHandler::AddError($request->getSession(), "Failed to remove " . $movie->getTitle());
         }
         return $this->redirectToRoute("home");
     }

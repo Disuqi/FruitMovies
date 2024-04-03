@@ -7,7 +7,8 @@ use App\Entity\Movie;
 use App\Form\MovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Clients\TmdbClient;
+use App\Services\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,7 @@ class MoviePage extends AbstractController
 {
     #[Route("/movie/{id}", name:"movie")]
     #[Template("movie.html.twig")]
-    public function movie(Request $request, Movie $movie) : array
+    public function movie(Request $request, Movie $movie, TmdbClient $tmdb) : array
     {
         $addReviewForm = $this->createForm(ReviewFormType::class)->createView();
         $options = [];
@@ -48,11 +49,16 @@ class MoviePage extends AbstractController
         $reviews = new ArrayCollection($reviews);
         $searchForm = $this->createForm(SearchFormType::class)->createView();
         $addMovieForm = null;
+
         if($this->isGranted("ROLE_ADMIN"))
             $addMovieForm = $this->createForm(MovieFormType::class)->createView();
 
+        $tmdbData = $tmdb->findMulti($movie->getTitle(), $movie->getReleaseDate());
+        $videos = $tmdb->findMovieVideos($movie->getTitle(), $movie->getReleaseDate());
         return [
             "movie" => $movie,
+            "tmdb_data" => $tmdbData,
+            "videos" => $videos,
             "reviews" => $reviews,
             "addReviewForm" => $addReviewForm,
             "edit_review_form" => $editReviewForm,

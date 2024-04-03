@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Utils\Errors;
+namespace App\Services\Errors;
 
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 

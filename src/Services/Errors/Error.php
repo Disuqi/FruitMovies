@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utils\Errors;
+namespace App\Services\Errors;
 
 class Error
 {

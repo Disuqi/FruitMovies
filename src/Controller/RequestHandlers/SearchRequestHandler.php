@@ -4,7 +4,7 @@ namespace App\Controller\RequestHandlers;
 
 
 use App\Form\SearchFormType;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

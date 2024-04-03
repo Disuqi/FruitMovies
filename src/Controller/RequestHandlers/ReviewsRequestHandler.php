@@ -7,7 +7,7 @@ use App\Entity\Review;
 use App\Entity\ReviewVote;
 use App\Form\ReviewFormType;
 use App\Repository\ReviewVoteRepository;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;

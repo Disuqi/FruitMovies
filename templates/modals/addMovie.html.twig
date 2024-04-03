@@ -1,7 +1,7 @@
 <div id="add-movie-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <div class="relative bg-gray-900 rounded-lg shadow border border-gray-800">
-        {{ form_start(add_movie_form) }}
+            {{ form_start(add_movie_form) }}
             <div class="flex items-center justify-between p-4 md:p-5 border-b border-gray-800 rounded-t">
                 <h3 class="text-xl font-semibold text-white">
                     Add Movie
@@ -13,8 +13,8 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <div class="p-4 md:p-5 space-y-4 text-gray-200 text-xl flex flex-row gap-10 items-center justify-evenly">
-                <div class="w-full h-full flex flex-col gap-2 items-center justify-center">
+            <div class="p-5 space-y-4 text-gray-200 text-xl flex flex-row gap-10 items-center justify-evenly">
+                <div class="flex flex-col gap-2 items-center justify-center">
                     <h4 class="w-full text-start">Cover Photo</h4>
                     <label id="fileInputLabel" for="{{ add_movie_form.cover_photo.vars.id }}" class="border border-gray-800 w-72 h-96 cursor-pointer hover:brightness-125 bg-cover">
                         <span id="no-image-svg" class="flex items-center justify-center w-full h-full">
@@ -26,11 +26,23 @@
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Title</h4>
-                        {{ form_widget(add_movie_form.title, {'attr': {'class' : 'w-72 text-black'}}) }}
+                        <div class="inline-block relative">
+                            {{ form_widget(add_movie_form.title, {'attr': {'class' : 'w-72 text-black', 'onkeydown': 'fetchTmdbMovieData()'}}) }}
+                            <div id="titles-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
+                                <div id="titles-list" class="py-2 text-sm flex flex-col">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Overview</h4>
-                        {{ form_widget(add_movie_form.overview, {'attr': {'class' : 'w-72 text-black'}}) }}
+                        <div class="inline-block relative">
+                            {{ form_widget(add_movie_form.overview, {'attr': {'class' : 'w-72 text-black', 'onclick': 'suggestOverview()'}}) }}
+                            <div id="overview-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
+                                <div id="overview-suggestion" class="py-2 text-sm flex flex-col">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Running Time</h4>
@@ -38,29 +50,27 @@
                     </div>
                     <div class="flex flex-col gap-1 items-start justify-start">
                         <h4>Release Date</h4>
-                        {{ form_widget(add_movie_form.release_date, {'attr': {'class' : 'w-72 text-black'}}) }}
+                        {{ form_widget(add_movie_form.release_date, {'attr': {'class' : 'w-72 text-black' }}) }}
                     </div>
                     <div class="flex flex-col">
                         <label for="director-input">Director</label>
-                        <div class="flex flex-row gap-2 items-center justify-between">
+                        <div class="flex flex-row gap-1 items-center justify-between">
                             <div class="inline-block relative">
-                                <input class="text-black" id="director-input" type="text" onkeyup="fetchDirectors()"/>
+                                {{ form_widget(add_movie_form.director, {'attr': {'class' : 'w-72 text-black', 'onclick': 'suggestDirectors()'}}) }}
                                 <div id="directors-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
-                                    <div id="list-of-directors" class="py-2 text-sm flex flex-col">
+                                    <div id="directors-list" class="py-2 text-sm flex flex-col">
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" id="set-director" onclick="setDirector()" class="py-2 px-4 text-center rounded-md text-sm font-light bg-blue-600 hover:bg-blue-500 cursor-pointer">Set</button>
                         </div>
-                        {{ form_widget(add_movie_form.director, {'attr': {'class' : 'hidden'}}) }}
                     </div>
                     <div class="flex flex-col">
                         <label for="actor-input">Actor</label>
                         <div class="flex flex-row gap-2 items-center justify-between">
                             <div class="inline-block relative">
-                                <input class="text-black" id="actor-input" type="text" onkeyup="fetchActors()" />
+                                <input class="text-black" id="actor-input" type="text" onclick="suggestActors()" />
                                 <div id="actors-dropdown" class="hidden w-full origin-top-left absolute left-0 z-10 bg-gray-800 rounded-lg shadow">
-                                    <div id="list-of-actors" class="py-2 text-sm flex flex-col">
+                                    <div id="actors-list" class="py-2 text-sm flex flex-col">
                                     </div>
                                 </div>
                             </div>
@@ -84,122 +94,309 @@
     </div>
 </div>
 <script>
-    function fetchDirectors()
+    let selectedTmdbMovie=null;
+
+    function formatArray(array, sort = true)
     {
-        console.log("FETCH DIRECTORS");
-        const dropdown = document.getElementById("directors-dropdown");
-        const directorsList = document.getElementById("list-of-directors");
-        const directorInput = document.getElementById("director-input");
-        const searchQuery = directorInput.value;
+        let formattedArray = array.filter(item => item != null && item !== "");
+        formattedArray = [...new Set(formattedArray)];
+        if(sort)
+            formattedArray.sort();
+        return formattedArray;
+    }
+
+    function createButton(text, onClick)
+    {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
+        btn.textContent = text;
+        btn.onclick = onClick;
+        return btn;
+    }
+
+    async function fetchTmdbMovieData()
+    {
+        const dropdown = document.getElementById("titles-dropdown");
+        const titlesList = document.getElementById("titles-list");
+        const titleInput = document.getElementById("{{ add_movie_form.title.vars.id }}");
+        const searchQuery = titleInput.value;
 
         if(searchQuery.length < 3)
-        {
-            directorsList.replaceChildren();
-            dropdownHandler(dropdown, false);
             return;
-        }
 
-        $.ajax(
+        const response = await fetch("{{ path("searchTmdb") }}", { headers: { "searchQuery" : searchQuery }});
+
+        let results = (await response.json()).results;
+        if(results.length === 0)
+            return dropdownHandler(titleInput, dropdown, false);
+
+        let titles = results.map(movie => movie.original_title);
+        titles = formatArray(titles, false);
+        titles = titles.slice(0, 10);
+
+        titlesList.replaceChildren();
+        titles.forEach(title =>
+        {
+            const btn = createButton(title, () =>
             {
-                url: "{{ path('directors') }}",
-                type: 'POST',
-                data: { searchQuery: searchQuery },
-                success: function(data)
-                {
-                    const directorsFound = JSON.parse(data);
-                    if(directorsFound.length > 0)
-                        dropdownHandler(dropdown, true);
-                    else
-                        dropdownHandler(dropdown, false);
-
-                    directorsList.replaceChildren();
-                    directorsFound.forEach((director) =>
-                    {
-                        const name = director["name"];
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-                        btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
-                        btn.textContent = name;
-                        btn.onclick = () =>
-                        {
-                            directorInput.value = name;
-                            setDirector();
-                        };
-                        directorsList.append(btn);
-                    })
-                }
+                titleInput.value = title;
+                dropdownHandler(titleInput, dropdown, false);
+                selectedTmdbMovie = results.find(movie => movie.original_title === title);
+                fetchCredits();
             });
+            titlesList.append(btn);
+        });
+
+        if(document.activeElement === titleInput)
+            dropdownHandler(titleInput, dropdown, true);
     }
 
-    function fetchActors()
+    async function fetchCredits()
+    {
+        const directorsResponse = await fetch("{{ path("searchMovieDirectors") }}", { headers: { "movieTitle" : selectedTmdbMovie.original_title }});
+        const directorsResults = (await directorsResponse.json()).results;
+        let directors = directorsResults.map(director => director.name);
+        selectedTmdbMovie.directors = formatArray(directors);
+
+        const castResponse = await fetch("{{ path("searchMovieCast") }}", { headers: { "movieTitle" : selectedTmdbMovie.original_title }});
+        const castResults = (await castResponse.json()).results;
+        let cast = castResults.map(cast => cast.name);
+        selectedTmdbMovie.cast = formatArray(cast);
+    }
+
+    function suggestOverview()
+    {
+        if(selectedTmdbMovie == null || selectedTmdbMovie.overview === undefined || selectedTmdbMovie.overview == null)
+            return;
+
+        const overviewInput = document.getElementById("{{ add_movie_form.overview.vars.id }}")
+        const dropdown = document.getElementById("overview-dropdown");
+        const suggestion = document.getElementById("overview-suggestion");
+
+        if(overviewInput.value === selectedTmdbMovie.overview)
+            return;
+
+        suggestion.replaceChildren();
+        const btn = createButton(selectedTmdbMovie.overview, () =>
+        {
+            overviewInput.value = selectedTmdbMovie.overview;
+            dropdownHandler(overviewInput, dropdown, false);
+            suggestion.replaceChildren();
+        });
+        suggestion.append(btn);
+
+        dropdownHandler(overviewInput, dropdown, true);
+    }
+
+    async function suggestDirectors()
+    {
+        const dropdown = document.getElementById("directors-dropdown");
+        const directorsList = document.getElementById("directors-list");
+        const directorInput = document.getElementById("{{ add_movie_form.director.vars.id }}");
+
+        directorsList.replaceChildren();
+        if(selectedTmdbMovie != null && selectedTmdbMovie.directors !==  undefined)
+        {
+            let directors = selectedTmdbMovie.directors;
+            if(directorInput.value !== "" || directorInput.value !== null)
+            {
+                directors.sort((a, b) =>
+                {
+                    return levenshteinDistance(directorInput.value, a) - levenshteinDistance(directorInput.value, b);
+                })
+            }
+
+            directors = directors.slice(0, 5);
+            directors.forEach(director =>
+            {
+                const btn = createButton(director, () =>
+                {
+                    directorInput.value = director;
+                    dropdownHandler(directorInput, dropdown, false);
+                    directorsList.replaceChildren();
+                });
+                directorsList.append(btn);
+            });
+        }
+        else
+        {
+            const searchQuery = directorInput.value;
+
+            if(searchQuery.length < 3)
+            {
+                directorsList.replaceChildren();
+                dropdownHandler(directorInput, dropdown, false);
+                return;
+            }
+
+            $.ajax(
+                {
+                    url: "{{ path('directors') }}",
+                    type: 'POST',
+                    data: { searchQuery: searchQuery },
+                    success: function(data)
+                    {
+                        const directorsFound = JSON.parse(data);
+                        if(directorsFound.length > 0)
+                            dropdownHandler(directorInput, dropdown, true);
+                        else
+                            dropdownHandler(directorInput, dropdown, false);
+
+                        directorsList.replaceChildren();
+                        directorsFound.forEach((director) =>
+                        {
+                            const name = director["name"];
+                            const btn = document.createElement("button");
+                            btn.type = "button";
+                            btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
+                            btn.textContent = name;
+                            btn.onclick = () =>
+                            {
+                                directorInput.value = name;
+                                setDirector();
+                            };
+                            directorsList.append(btn);
+                        })
+                    }
+                });
+        }
+
+        if(directorsList.children.length > 0)
+            dropdownHandler(directorInput, dropdown, true);
+    }
+
+    async function suggestActors()
     {
         const dropdown = document.getElementById("actors-dropdown");
-        const actorsList = document.getElementById("list-of-actors");
+        const actorsList = document.getElementById("actors-list");
         const actorInput = document.getElementById("actor-input");
-        const searchQuery = actorInput.value;
 
-        if(searchQuery.length < 4)
+        actorsList.replaceChildren();
+        if(selectedTmdbMovie !== null && selectedTmdbMovie.cast !== undefined)
         {
-            actorsList.replaceChildren();
-            dropdownHandler(dropdown, false);
-            return;
+            let cast = selectedTmdbMovie.cast;
+            if(actorInput.value !== "" || actorInput.value !== null)
+            {
+                cast.sort((a, b) =>
+                {
+                    return levenshteinDistance(actorInput.value, a) - levenshteinDistance(actorInput.value, b);
+                })
+            }
+
+            cast = cast.slice(0, 5);
+            cast.forEach(actor =>
+            {
+                const btn = createButton(actor, () =>
+                {
+                    actorInput.value = actor;
+                    dropdownHandler(actorInput, dropdown, false);
+                    addActor();
+                });
+                actorsList.append(btn);
+            });
+            const autoLoadBtn = createButton("Add All Suggestions", () =>
+            {
+                dropdownHandler(actorInput, dropdown, false);
+                selectedTmdbMovie.cast.forEach(actor =>
+                {
+                   actorInput.value = actor;
+                   addActor();
+                });
+            })
+            actorsList.append(autoLoadBtn);
+        }
+        else
+        {
+            const searchQuery = actorInput.value;
+            if(searchQuery.length < 4)
+            {
+                actorsList.replaceChildren();
+                dropdownHandler(actorInput, dropdown, false);
+                return;
+            }
+
+            $.ajax(
+                {
+                    url: "{{ path('actors') }}",
+                    type: 'POST',
+                    data: { searchQuery: searchQuery },
+                    success: function(data)
+                    {
+                        const actorsFound = JSON.parse(data);
+                        if(actorsFound.length > 0)
+                            dropdownHandler(actorInput, dropdown, true);
+                        else
+                            dropdownHandler(actorInput, dropdown, false);
+
+                        actorsList.replaceChildren();
+                        actorsFound.forEach((actor) =>
+                        {
+                            const name = actor["name"];
+                            const btn = document.createElement("button");
+                            btn.type = "button";
+
+                            btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
+                            btn.textContent = name;
+                            btn.onclick = () =>
+                            {
+                                actorInput.value = name;
+                                addActor(name);
+                            };
+                            actorsList.append(btn);
+                        })
+                    }
+                });
         }
 
-        $.ajax(
-            {
-                url: "{{ path('actors') }}",
-                type: 'POST',
-                data: { searchQuery: searchQuery },
-                success: function(data)
-                {
-                    const actorsFound = JSON.parse(data);
-                    if(actorsFound.length > 0)
-                        dropdownHandler(dropdown, true);
-                    else
-                        dropdownHandler(dropdown, false);
-
-                    actorsList.replaceChildren();
-                    actorsFound.forEach((actor) =>
-                    {
-                        const name = actor["name"];
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-
-                        btn.className = "p-2 hover:bg-gray-700 cursor-pointer text-start"
-                        btn.textContent = name;
-                        btn.onclick = () =>
-                        {
-                            actorInput.value = name;
-                            addActor(name);
-                        };
-                        actorsList.append(btn);
-                    })
-                }
-            });
+        if(actorsList.children.length > 0)
+            dropdownHandler(actorInput, dropdown, true);
     }
 
-    function dropdownHandler(dropdown, show)
+    let activeElement = { input: null, dropdown: null };
+
+    function dropdownHandler(input, dropdown, show)
     {
+        if(dropdown == null)
+            return;
+
         if(show)
         {
-            if(dropdown.classList.contains("block")) return;
+            if(activeElement.dropdown === dropdown)
+                return;
+
+            if(dropdown.classList.contains("block"))
+                return;
+
+            if(activeElement.dropdown != null)
+                dropdownHandler(activeElement.input, activeElement.dropdown, false);
+
             dropdown.classList.remove("hidden");
-            dropdown.classList.add("block")
+            dropdown.classList.add("block");
+            activeElement = {input: input, dropdown: dropdown};
         }
         else
         {
             if(dropdown.classList.contains("hidden")) return;
             dropdown.classList.remove("block");
             dropdown.classList.add("hidden");
+            activeElement = {input: null, dropdown: null};
         }
     }
 
+    document.addEventListener("click", function(event)
+    {
+        if(activeElement.input !== null && activeElement.input !== undefined && document.activeElement === activeElement.input)
+            return;
+
+        dropdownHandler(activeElement.input, activeElement.dropdown, false);
+    });
+
     function addActor()
     {
-        const dropdown = document.getElementById("actors-dropdown");
-        dropdownHandler(dropdown, false);
-
+        dropdownHandler(activeElement.input, activeElement.dropdown, false);
         const actorInput = document.getElementById("actor-input");
+
         name = actorInput.value;
         if(name.length === 0)
             return;
@@ -253,48 +450,40 @@
         formActors.removeChild(option);
     }
 
-    function setDirector()
+    function levenshteinDistance(s1, s2)
     {
-        console.log("SET DIRECTOR")
-        const dropdown = document.getElementById("directors-dropdown");
-        dropdownHandler(dropdown, false);
+        if(s1 == null) return s2;
+        if(s2 == null) return s1;
+        if (s1.length === 0) return s2.length;
+        if (s2.length === 0) return s1.length;
 
-        const directorInput = document.getElementById("director-input");
-        name = directorInput.value;
-        if(name.length === 0)
-            return;
-        const directorHeading = document.createElement("h1");
-        directorHeading.id = "selected-director"
-        directorHeading.className = "font-light";
-        directorHeading.textContent = name;
+        const matrix = [];
 
-        directorInput.parentNode.replaceChild(directorHeading, directorInput);
+        for (let i = 0; i <= s2.length; i++)
+        {
+            matrix[i] = [i];
+        }
+        for (let j = 0; j <= s1.length; j++)
+        {
+            matrix[0][j] = j;
+        }
 
-        const setDirectorBtn = document.getElementById("set-director");
-        setDirectorBtn.textContent = "Change";
-        setDirectorBtn.onclick = changeDirector;
+        for (let i = 1; i <= s2.length; i++)
+        {
+            for (let j = 1; j <= s1.length; j++)
+            {
+                if (s2.charAt(i - 1) === s1.charAt(j - 1))
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                else
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,  // Substitution
+                        matrix[i][j - 1] + 1,      // Insertion
+                        matrix[i - 1][j] + 1       // Deletion
+                    );
 
-        const formDirector = document.getElementById("{{ add_movie_form.director.vars.id }}");
-        formDirector.value = name;
-    }
+            }
+        }
 
-    function changeDirector()
-    {
-        console.log("Change director")
-        const directorHeading = document.getElementById("selected-director");
-        const directorInput = document.createElement("input");
-        directorInput.type = "text";
-        directorInput.id = "director-input"
-        directorInput.onkeyup = fetchDirectors;
-        directorInput.className = "text-black";
-
-        directorHeading.parentNode.replaceChild(directorInput, directorHeading);
-
-        const setDirectorBtn = document.getElementById("set-director");
-        setDirectorBtn.textContent = "Set";
-        setDirectorBtn.onclick = setDirector;
-
-        const formDirector = document.getElementById("{{ add_movie_form.director.vars.id }}");
-        formDirector.value = "";
+        return matrix[s2.length][s1.length];
     }
 </script>

@@ -13,7 +13,6 @@ global.$ = global.jquery = $;
 
 function previewImage(fileElementId)
 {
-    console.log("HERE: " + fileElementId)
     const file = document.getElementById(fileElementId).files[0];
     const label = document.getElementById("fileInputLabel");
     const noImageElement = document.getElementById("no-image-svg");

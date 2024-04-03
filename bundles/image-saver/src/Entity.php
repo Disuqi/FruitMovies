@@ -88,7 +88,7 @@ class Entity
         }
     }
 
-    public function getImage() : string
+    public function getImage() : string | null
     {
         if($this->image)
         {
@@ -101,7 +101,7 @@ class Entity
         }
     }
 
-    public function setImage(string $path): void
+    public function setImage(string|null $path): void
     {
         if($this->image)
         {

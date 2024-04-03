@@ -17,7 +17,6 @@ class ImageSaver
     private array $entitiesData;
     private ?EntityManagerInterface $entityManager;
 
-
     public function __construct(mixed $entities, bool $handleEntityManager, EntityManagerInterface $entityManager)
     {
         $this->entitiesData = $entities;
@@ -57,7 +56,7 @@ class ImageSaver
         $imageSaverEntity = new Entity($entity, $entityData["id"], $entityData["image"]);
 
         $path = $imageSaverEntity->getImage();
-        if(file_exists($path))
+        if($path && file_exists($path))
         {
             unlink($path);
             $this->submit($imageSaverEntity, null);
@@ -68,7 +67,7 @@ class ImageSaver
 
     private function submit(Entity $imageSaverEntity, $imagePath)
     {
-        $imageSaverEntity->setImage(null);
+        $imageSaverEntity->setImage($imagePath);
 
         if($this->entityManager)
         {

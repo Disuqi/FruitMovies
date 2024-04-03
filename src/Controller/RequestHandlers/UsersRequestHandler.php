@@ -3,7 +3,7 @@
 namespace App\Controller\RequestHandlers;
 
 use App\Entity\User;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Exception;

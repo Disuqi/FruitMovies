@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Form\MovieFormType;
 use App\Form\ReviewFormType;
 use App\Form\SearchFormType;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

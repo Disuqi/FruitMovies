@@ -4,7 +4,7 @@ namespace App\Controller\Pages;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Utils\Errors\ErrorHandler;
+use App\Services\Errors\ErrorHandler;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;

@@ -26,45 +26,79 @@
                 </div>
                 <p class="text-xl">{{ movie.getOverview() }}</p>
             </div>
-            <div class="flex flex-row gap-6">
-                {% if director %}
-                    <div class="flex flex-col justify-start gap-2">
-                        <h2 class="text-2xl font-bold">Director</h2>
-                        <div>
-                            <div class="h-60 w-40 flex justify-center items-center">
-                                {% if director.getPhoto() %}
-                                    <img src="{{ director.getPhoto() }}" alt="{{ director.getName() }} Photo"/>
-                                {% else %}
-                                    <div class="w-full">
-                                        {{ include('svgs/NoCrewMemberPhoto.svg') }}
-                                    </div>
-                                {% endif %}
+            {% if tmdb_data %}
+                <div class="flex flex-col gap-2">
+                    <div class="flex flex-row gap-2">
+                        <h2 class="font-semibold text-xl">Tmdb Popularity:</h2>
+                        <p class="font-semibold text-xl text-gray-400">{{ tmdb_data.popularity }}</p>
+                    </div>
+                    <div class="flex flex-row gap-2">
+                        <h2 class="font-semibold text-xl">Tmdb Vote Average:</h2>
+                        <p class="font-semibold text-xl text-gray-400">{{ tmdb_data.vote_average }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            {% if director or actors %}
+                <div class="flex flex-row gap-6">
+                    {% if director %}
+                        <div class="flex flex-col justify-start gap-2">
+                            <h2 class="text-2xl font-bold">Director</h2>
+                            <div>
+                                <a href="{{ path('crewMember', {'id': director.getId()}) }}" class="h-60 w-40 flex justify-center items-center">
+                                    {% if director.getPhoto() %}
+                                        <img src="{{ director.getPhoto() }}" alt="{{ director.getName() }} Photo"/>
+                                    {% else %}
+                                        <div class="w-full">
+                                            {{ include('svgs/NoCrewMemberPhoto.svg') }}
+                                        </div>
+                                    {% endif %}
+                                </a>
+                                <h3 class="font-medium">{{ director.getName() }}</h3>
                             </div>
-                            <h3 class="font-medium">{{ director.getName() }}</h3>
                         </div>
-                    </div>
-                {% endif %}
-                {% if actors %}
-                    <div class="flex flex-col justify-start gap-2">
-                        <h2 class="text-2xl font-bold">Cast</h2>
-                        <div class="flex flex-row justify-start items-start gap-2 overflow-x-auto w-[55rem]">
-                            {% for actor in actors %}
-                                <div class="flex flex-col justify-center">
-                                    <div class="h-60 w-40 flex justify-center items-center">
-                                        {% if actor.getPhoto() %}
-                                            <img src="{{ actor.getPhoto() }}" alt="{{ actor.getName() }} Photo"/>
-                                        {% else %}
-                                            <div class="w-full">
-                                                {{ include('svgs/NoCrewMemberPhoto.svg') }}
-                                            </div>
-                                        {% endif %}
+                    {% endif %}
+                    {% if actors %}
+                        <div class="flex flex-col justify-start gap-2">
+                            <h2 class="text-2xl font-bold">Cast</h2>
+                            <div class="flex flex-row justify-start items-start gap-2 overflow-x-auto w-[55rem]">
+                                {% for actor in actors %}
+                                    <div class="flex flex-col justify-center">
+                                        <a href="{{ path('crewMember', {'id': actor.getId()}) }}" class="h-60 w-40 flex justify-center items-center">
+                                            {% if actor.getPhoto() %}
+                                                <img src="{{ actor.getPhoto() }}" alt="{{ actor.getName() }} Photo"/>
+                                            {% else %}
+                                                <div class="w-full">
+                                                    {{ include('svgs/NoCrewMemberPhoto.svg') }}
+                                                </div>
+                                            {% endif %}
+                                        </a>
+                                        <h3 class="font-medium">{{ actor.getName() }}</h3>
                                     </div>
-                                    <h3 class="font-medium">{{ actor.getName() }}</h3>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if videos %}
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-bold">Videos</h1>
+                    <div class="flex flex-row justify-start items-start gap-2 overflow-x-auto container w-[55rem]">
+                        {% for video in videos %}
+                            <div class="flex flex-col">
+                                <iframe src="https://www.youtube.com/embed/{{ video.key }}" allowfullscreen></iframe>
+                                <h2 class="text-xl font-semibold text-gray-400">{{ video.type }}</h2>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endif %}
+                </div>
+            {% endif %}
+            <div id="cinemas-container" class="flex flex-col gap-2">
+                <h1 class="text-2xl font-bold">Watch It Here</h1>
+                <div id="cinemas" class="flex flex-row gap-3 justify-center items-center">
+                    <p class="text-gray-600 text-xl font-semibold">Loading</p>
+                    {{ include("elements/loading.html.twig") }}
+                </div>
             </div>
             {% if movie.hasReleased() %}
             {% set canReview = false %}
@@ -107,4 +141,68 @@
             </div>
         {% endif %}
     </div>
+    <script>
+        const container = document.getElementById("cinemas-container");
+        const cinemas = document.getElementById("cinemas");
+        async function searchCinemasNearby(latitude, longitude) {
+            const response = await fetch("{{ path("cinemas") }}", {
+                headers:
+                    {
+                        lat: latitude,
+                        long: longitude
+                    }
+            });
+
+            cinemas.replaceChildren();
+            const data = await response.json();
+            if(data == null || data.length <= 0)
+            {
+                const message = document.createElement("p");
+                message.textContent = "No Cinemas Found";
+                message.className = "text-xl text-gray-500 font-semibold";
+                cinemas.append(message);
+                return;
+            }
+
+            data.forEach(cinema =>
+            {
+                const container = document.createElement("a");
+                container.className = "flex flex-col gap-2 justify-start items-start bg-gray-900 rounded-md hover:bg-gray-800 py-2 px-4";
+                if(cinema.tags.website)
+                    container.href = cinema.tags.website;
+                else
+                    container.href = "https://www.google.com/maps/place/" + cinema.tags["addr:postcode"];
+                container.target = "_blank";
+
+                const title = document.createElement("h2");
+                title.className = "font-medium text-xl text-indigo-400";
+                title.textContent = cinema.tags.name;
+                container.append(title);
+
+                const addr = document.createElement("p");
+                addr.className = "font-medium text-md text-white";
+                if(cinema.tags["addr:housenumber"])
+                {
+                    addr.innerHTML = cinema.tags["addr:housenumber"] + " " + cinema.tags["addr:street"];
+                }else
+                {
+                    addr.innerHTML = cinema.tags["addr:housename"];
+
+                }
+                addr.innerHTML += "<br>" + cinema.tags["addr:city"] + "<br>" + cinema.tags["addr:postcode"];
+
+                container.append(addr);
+                cinemas.append(container);
+            });
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos)=>
+            {
+                searchCinemasNearby(pos.coords.latitude, pos.coords.longitude);
+            }, (error) =>
+            {
+                console.log("Failed to get pos")
+            });
+    </script>
 {% endblock %}
