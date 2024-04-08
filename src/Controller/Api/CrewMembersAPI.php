@@ -56,6 +56,9 @@ class CrewMembersAPI extends AbstractFOSRestController
     #[Rest\Post("api/v1/crewMembers", name:"postCrewMember")]
     public function postCrewMember(Request $request): View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can add crew members", Response::HTTP_FORBIDDEN);
+
         $data = json_decode($request->getContent());
 
         if(empty($data->name) || empty($data->role))
@@ -83,6 +86,9 @@ class CrewMembersAPI extends AbstractFOSRestController
     #[Rest\Delete("api/v1/crewMembers/{id}", name:"deleteCrewMember")]
     public function deleteCrewMember(int $id): View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can delete crew members", Response::HTTP_FORBIDDEN);
+
         $crewMember = $this->crewMemberRepository->find($id);
         if(!$crewMember)
             return View::create("Crew Member not found", Response::HTTP_NOT_FOUND);

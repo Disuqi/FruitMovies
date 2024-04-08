@@ -8,9 +8,6 @@ use App\Form\MovieApiFormType;
 use App\Repository\CrewMemberRepository;
 use App\Repository\MovieCrewMemberRepository;
 use App\Repository\MovieRepository;
-use App\Utils\Search\MoviesSearchOptions;
-use App\Utils\Search\OrderMoviesBy;
-use App\Utils\Search\SortOrder;
 use AWD\ImageSaver\ImageSaver;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -45,7 +42,8 @@ class MoviesAPI extends AbstractFOSRestController
 
         if(!$page || $page == "")
             $page = 1;
-        $searchResult = $this->movieRepository->searchMovies(new MoviesSearchOptions(orderBy: OrderMoviesBy::Title, orderSort: SortOrder::Descending, page: $page));
+
+        $searchResult = $this->movieRepository->getPage($page);
         return View::create($searchResult, Response::HTTP_OK);
     }
 
@@ -62,6 +60,9 @@ class MoviesAPI extends AbstractFOSRestController
     #[Rest\Post("api/v1/movies", name: "postMovie")]
     public function postMovie(Request $request): View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can create movies", Response::HTTP_FORBIDDEN);
+
         $movie = new Movie();
         $form = $this->createForm( MovieApiFormType::class, $movie);
         $data = json_decode($request->getContent(), true);
@@ -71,7 +72,7 @@ class MoviesAPI extends AbstractFOSRestController
         {
             $existingMovie = $this->movieRepository->findOneBy(["title" => $movie->getTitle(), "overview" => $movie->getOverview()]);
             if($existingMovie)
-                return View::create("Movie already exists", Response::HTTP_ALREADY_REPORTED)->setLocation("/api/v1/movies/" . $existingMovie->getId());
+                return View::create("Movie already exists", Response::HTTP_CONFLICT)->setLocation("/api/v1/movies/" . $existingMovie->getId());
 
             try
             {
@@ -93,6 +94,9 @@ class MoviesAPI extends AbstractFOSRestController
     #[Rest\Put("api/v1/movies/{id}", name: "putMovie")]
     public function putMovie(Request $request, int $id) : View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can modify movies", Response::HTTP_FORBIDDEN);
+
         $movie = $this->movieRepository->find($id);
         if(!$movie)
             return View::create("Movie not found", Response::HTTP_NOT_FOUND);
@@ -113,15 +117,25 @@ class MoviesAPI extends AbstractFOSRestController
     #[Rest\Post("api/v1/movies/{id}/image", name:"postMovieImage")]
     public function postMovieImage(Request $request, ImageSaver $imageSaver, int $id): View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can modify movies", Response::HTTP_FORBIDDEN);
+
         $movie = $this->movieRepository->find($id);
         if(!$movie)
-            return View::create("Movie not found", Response::HTTP_OK);
+            return View::create("Movie not found", Response::HTTP_NOT_FOUND);
 
         $cover_photo = $request->files->get("cover_photo");
         if(!$cover_photo)
             return View::create("No image uploaded or incorrectly labelled", Response::HTTP_BAD_REQUEST);
 
-        $imageSaver->saveImage($movie, $cover_photo);
+        try
+        {
+            $imageSaver->saveImage($movie, $cover_photo);
+        }
+        catch(\Error|\Exception $e)
+        {
+            return View::create("Invalid image file. You can only upload .png, .jpeg or .jpg image files",Response::HTTP_BAD_REQUEST);
+        }
 
         return View::create("Successfully saved movie image", Response::HTTP_OK);
     }
@@ -129,6 +143,9 @@ class MoviesAPI extends AbstractFOSRestController
     #[Rest\Delete("api/v1/movies/{id}", name: "deleteMovie")]
     public function deleteMovie(int $id) : View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can delete movies", Response::HTTP_FORBIDDEN);
+
         $movie = $this->movieRepository->find($id);
         if(!$movie)
             return View::create("Movie not found", Response::HTTP_NOT_FOUND);
@@ -139,8 +156,8 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create("Successfully deleted movie", Response::HTTP_OK);
     }
 
-    #[Rest\Get("api/v1/movies/{id}/crewMembers", name: "getCrewMembers")]
-    public function getCrewMembers(int $id): View
+    #[Rest\Get("api/v1/movies/{id}/crewMembers", name: "getMovieCrewMembers")]
+    public function getMovieCrewMembers(int $id): View
     {
         $movie = $this->movieRepository->find($id);
         if(!$movie)
@@ -149,9 +166,12 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create(["director" => $movie->getDirector(), "actors" => $movie->getActors()], Response::HTTP_OK);
     }
 
-    #[Rest\Put("api/v1/movies/{id}/crewMembers", name:"putCrewMembers")]
-    public function putCrewMembers(Request $request, CrewMemberRepository $crewMemberRepository, MovieCrewMemberRepository $movieCrewMemberRepository, int $id): View
+    #[Rest\Put("api/v1/movies/{id}/crewMembers", name:"putMovieCrewMembers")]
+    public function putMovieCrewMembers(Request $request, CrewMemberRepository $crewMemberRepository, MovieCrewMemberRepository $movieCrewMemberRepository, int $id): View
     {
+        if(!$this->isGranted("ROLE_ADMIN"))
+            return View::create("Only admins can edit movies", Response::HTTP_FORBIDDEN);
+
         $movie = $this->movieRepository->find($id);
         if(!$movie)
             return View::create("Movie not found", Response::HTTP_NOT_FOUND);

@@ -15,10 +15,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository
+class UserRepository extends PaginatedEntityRepository
 {
-    public const PAGE_SIZE = 20;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -30,15 +28,12 @@ class UserRepository extends ServiceEntityRepository
             ->where("u.username LIKE :username")
             ->setParameter("username", "%".$username."%");
 
-        $countQb = clone $qb;
-        $countQb->select("COUNT(DISTINCT u.id)");
-        $totalCount = $countQb->getQuery()->getSingleScalarResult();
-        $totalPages = ceil($totalCount/self::PAGE_SIZE);
+        $totalPages = $this->getTotalPages();
 
         if($page > 0)
         {
-            $qb->setFirstResult(($page - 1) * self::PAGE_SIZE)
-                ->setMaxResults(self::PAGE_SIZE);
+            $qb->setFirstResult(($page - 1) * PAGE_SIZE)
+                ->setMaxResults(PAGE_SIZE);
         }
         $results =  $qb->getQuery()->getResult();
         return new SearchResult($results, $page, $totalPages);

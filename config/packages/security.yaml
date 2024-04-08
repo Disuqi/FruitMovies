@@ -1,4 +1,6 @@
 security:
+    enable_authenticator_manager: true
+
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -8,7 +10,27 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+
     firewalls:
+        login:
+          pattern: ^/api/login
+          stateless: true
+          json_login:
+            check_path: /api/login_check
+            success_handler: lexik_jwt_authentication.handler.authentication_success
+            failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        refresh_token:
+          pattern: ^/api/token/refresh
+          stateless: true
+          refresh_jwt:
+            check_path: /api/token/refresh
+
+        api:
+          pattern:   ^/api/
+          stateless: true
+          jwt: ~
+
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -29,12 +51,17 @@ security:
             form_login:
                 enable_csrf: true
 
+
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_ADMIN
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+         - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
+         - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/apiToken, roles: ROLE_USER }
+         - { path: ^/apiSettings, roles: ROLE_USER }
          - { path: ^/reviews, roles: ROLE_USER }
          - { path: ^/addReview, roles: ROLE_USER }
          - { path: ^/editReview, roles: ROLE_USER }

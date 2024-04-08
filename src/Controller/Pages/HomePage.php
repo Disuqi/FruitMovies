@@ -8,6 +8,7 @@ use App\Repository\MovieRepository;
 use App\Services\Errors\ErrorHandler;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,7 @@ class HomePage extends AbstractController
 {
     #[Route("/", name:"home")]
     #[Template("home.html.twig")]
-    public function home(MovieRepository $movieRepository, Request $request, LoggerInterface $logger) : array
+    public function home(MovieRepository $movieRepository, Request $request) : array
     {
         $options = new MoviesSearchOptions(OrderMoviesBy::Reviews, additionalOrderBy: OrderMoviesBy::Rating, startDate: new \DateTime("-1 month"), endDate: new \DateTime());
         $juiciestPicks = $movieRepository->searchMovies($options)->results;

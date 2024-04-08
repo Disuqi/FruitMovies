@@ -35,6 +35,9 @@
         <li>
             <a href="{{ path('user', {'username' : app.user.username}) }}" class="block px-4 py-2 hover:bg-gray-800">Profile</a>
         </li>
+        <li>
+            <a href="{{ path('apiSettings') }}"  class="block px-4 py-2 hover:bg-gray-800">API Dashboard</a>
+        </li>
         {% if is_granted("ROLE_ADMIN") %}
             <li>
                 <button data-modal-target="add-movie-modal" data-modal-toggle="add-movie-modal" type="button" class="block w-full text-start px-4 py-2 hover:bg-gray-800">Add Movie</button>

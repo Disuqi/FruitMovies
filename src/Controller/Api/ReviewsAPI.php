@@ -42,7 +42,7 @@ class ReviewsAPI extends AbstractFOSRestController
 
         if(!$page || $page == "")
             $page = 1;
-        $searchResult = $this->reviewRepository->getReviewsPage($page);
+        $searchResult = $this->reviewRepository->getPage($page);
         return View::create($searchResult, Response::HTTP_OK);
     }
 
@@ -80,9 +80,7 @@ class ReviewsAPI extends AbstractFOSRestController
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $user = $userRepository->find($data["user_id"]);
-            if(!$user)
-                return View::create("User not found", Response::HTTP_NOT_FOUND);
+            $user = $this->getUser();
             $review->setUser($user);
 
             $movie = $movieRepository->find($data["movie_id"]);
@@ -92,7 +90,7 @@ class ReviewsAPI extends AbstractFOSRestController
 
             $existingReview = $this->reviewRepository->findOneBy(["user" => $user, "movie" => $movie]);
             if($existingReview)
-                return View::create("Review already exists", Response::HTTP_ALREADY_REPORTED)->setLocation("/api/v1/reviews/" . $existingReview->getId());
+                return View::create("Review already exists", Response::HTTP_CONFLICT)->setLocation("/api/v1/reviews/" . $existingReview->getId());
 
             $review->setDateReviewed(new \DateTimeImmutable());
             $this->entityManager->persist($review);
@@ -100,7 +98,7 @@ class ReviewsAPI extends AbstractFOSRestController
 
             return View::create("Successfully added review",  Response::HTTP_CREATED)->setLocation("/api/v1/reviews/" . $review->getId());
         }
-        return View::create($form->getErrors(), Response::HTTP_NOT_FOUND);
+        return View::create($form->getErrors(), Response::HTTP_BAD_REQUEST);
     }
 
     #[Rest\Put("api/v1/reviews/{id}", name: "putReview")]
@@ -110,17 +108,16 @@ class ReviewsAPI extends AbstractFOSRestController
         if(!$review)
             return View::create("Review not found", Response::HTTP_NOT_FOUND);
 
+        $user = $this->getUser();
+        if($review->getUser() != $user)
+            return View::create("Cannot change another user's review", Response::HTTP_FORBIDDEN);
+
         $form = $this->createForm( ReviewApiFormType::class, $review);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $user = $userRepository->find($data["user_id"]);
-            if(!$user)
-                return View::create("User not found", Response::HTTP_NOT_FOUND);
-            $review->setUser($user);
-
             $movie = $movieRepository->find($data["movie_id"]);
             if(!$movie)
                 return View::create("Movie not found", Response::HTTP_NOT_FOUND);
@@ -141,45 +138,13 @@ class ReviewsAPI extends AbstractFOSRestController
         if(!$review)
             return View::create("Review not found", Response::HTTP_NOT_FOUND);
 
+        $user = $this->getUser();
+        if($review->getUser() !== $user && !$this->isGranted("ROLE_ADMIN"))
+            return View::create("Cannot delete another user's review", Response::HTTP_FORBIDDEN);
+
         $this->entityManager->remove($review);
         $this->entityManager->flush();
 
         return View::create("Successfully deleted review", Response::HTTP_OK);
     }
-//
-//    #[Rest\Post("api/v1/reviews/{reviewId}/votes", name: "postReviewVote")]
-//    public function postReviewVote(int $reviewId, Request $request, UserRepository $userRepository): View
-//    {
-//        $review = $this->reviewRepository->find($reviewId);
-//        if(!$review)
-//            return View::create("Review not found", Response::HTTP_NOT_FOUND);
-//
-//        $reviewVote = new ReviewVote();
-//        $reviewVote->setReview($review);
-//
-//        $form = $this->createForm( ReviewVoteApiFormType::class, $reviewVote);
-//        $data = json_decode($request->getContent(), true);
-//        $form->submit($data);
-//
-//        if($form->isSubmitted() && $form->isValid())
-//        {
-//            $user = $userRepository->find($data["user_id"]);
-//            if(!$user)
-//                return View::create("User not found", Response::HTTP_NOT_FOUND);
-//            $reviewVote->setUser($user);
-//
-//            $existingVotes = $review->getReviewVotes();
-//            foreach($existingVotes as $vote)
-//            {
-//                if ($vote->getUser() == $user)
-//                    return View::create("Vote already exists", Response::HTTP_ALREADY_REPORTED);
-//            }
-//
-//            $this->entityManager->persist($reviewVote);
-//            $this->entityManager->flush();
-//
-//            return View::create("Successfully added review vote", Response::HTTP_CREATED)->setLocation("/api/v1/reviews/" . $review->getId() . "/votes");
-//        }
-//        return View::create($form->getErrors(), Response::HTTP_NOT_FOUND);
-//    }
 }

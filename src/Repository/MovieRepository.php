@@ -12,7 +12,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
-class MovieRepository extends ServiceEntityRepository
+class MovieRepository extends PaginatedEntityRepository
 {
     private const AVERAGE_RATING_NAME = "average_rating";
     private const REVIEW_COUNT_NAME = "review_count";
@@ -21,15 +21,6 @@ class MovieRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Movie::class);
-    }
-
-    public function getTotalPages() : int
-    {
-        $totalCount = $this->createQueryBuilder("m")
-            ->select("COUNT(DISTINCT m.id)")
-            ->getQuery()
-            ->getSingleScalarResult();
-        return ceil($totalCount/PAGE_SIZE);
     }
 
     public function searchMovies(MoviesSearchOptions $options)
