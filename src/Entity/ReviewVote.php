@@ -3,11 +3,18 @@
 namespace App\Entity;
 
 use App\Repository\ReviewVoteRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @OA\Schema(
+ *    schema="ReviewVote",
+ *    required={"userId",  "liked"},
+ *    @OA\Property(type="integer", property="review_id", example="20"),
+ *    @OA\Property(type="integer", property="user_id", example="1"),
+ *    @OA\Property(type="boolean", property="liked", example="true")
+ * )
+ */
 #[ORM\Entity(repositoryClass: ReviewVoteRepository::class)]
 class ReviewVote
 {

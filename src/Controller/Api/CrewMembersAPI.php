@@ -30,6 +30,7 @@ class CrewMembersAPI extends AbstractFOSRestController
      *     path="/api/v1/crewMembers",
      *     summary="Get a list of crew members",
      *     tags={"Crew Members"},
+     *     security={{"bearerAuth":{"user"}}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -60,6 +61,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=400,
      *         description="Bad request",
      *         @OA\JsonContent(
@@ -82,45 +91,50 @@ class CrewMembersAPI extends AbstractFOSRestController
 
         $totalPages = $this->crewMemberRepository->getTotalPages($role);
         if($page > $totalPages)
-            return View::create("Out of range", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Out of range"], Response::HTTP_NOT_FOUND);
 
         $searchResult = $this->crewMemberRepository->getCrewMembersPage($page, $role);
         return View::create($searchResult, Response::HTTP_OK);
     }
 
 
-/**
- * @OA\Get(
- *     path="/api/v1/crewMembers/{id}",
- *     summary="Get a specific crew member by ID",
- *     tags={"Crew Members"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         description="The ID of the crew member",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Crew member details",
- *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Crew member not found",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Crew member not found")
- *         )
- *     )
- * )
- */
+     /**
+     * @OA\Get(
+     *     path="/api/v1/crewMembers/{id}",
+     *     summary="Get a specific crew member by ID",
+     *     tags={"Crew Members"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the crew member",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Crew member details",
+     *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Crew member not found",
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/crewMembers/{id}", name: "getCrewMember")]
     public function getCrewMember(int $id): View
     {
         $crewMember = $this->crewMemberRepository->find($id);
         if(!$crewMember)
-            return View::create("Crew Member not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Crew Member not found" ], Response::HTTP_NOT_FOUND);
 
         return View::create($crewMember, Response::HTTP_OK);
     }
@@ -143,15 +157,13 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=202,
      *         description="Crew member updated successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Crew member not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Crew member not found")
+     *         @OA\JsonContent(ref="#/components/schemas/CrewMember"),
+     *         @OA\Header(
+     *             header="Location",
+     *             description="URL of the updated crew member",
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
@@ -159,6 +171,21 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         description="Invalid input",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Invalid input")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Crew member not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Crew member not found")
      *         )
      *     )
      * )
@@ -169,19 +196,19 @@ class CrewMembersAPI extends AbstractFOSRestController
         $crewMember = $this->crewMemberRepository->find($id);
 
         if (!$crewMember) {
-            return View::create("Crew member not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Crew member not found"], Response::HTTP_NOT_FOUND);
         }
 
         $data = json_decode($request->getContent());
 
         if(empty($data->name) || empty($data->role)) {
-            return View::create("Invalid input", Response::HTTP_BAD_REQUEST);
+            return View::create(["message" => "Invalid input"], Response::HTTP_BAD_REQUEST);
         }
 
         $role = CrewMemberRole::tryFrom($data->role);
 
         if(empty($role)) {
-            return View::create("Invalid Role", Response::HTTP_BAD_REQUEST);
+            return View::create(["message" => "Invalid Role"], Response::HTTP_BAD_REQUEST);
         }
 
         $crewMember->setRole($role->value);
@@ -190,7 +217,7 @@ class CrewMembersAPI extends AbstractFOSRestController
         $this->entityManager->persist($crewMember);
         $this->entityManager->flush();
 
-        return View::create($crewMember, Response::HTTP_OK);
+        return View::create(["message" => "Successfully updated"], Response::HTTP_ACCEPTED)->setLocation("api/v1/crewMembers/" . $crewMember->getId());
     }
 
 
@@ -209,6 +236,18 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         description="Crew member created successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Successfully created Crew Member")
+     *         ),
+     *         @OA\Header(
+     *             header="Location",
+     *             description="URL of the new crew memeber",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=208,
+     *         description="Crew Member already exists",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Crew Member already exists")
      *         )
      *     ),
      *     @OA\Response(
@@ -219,17 +258,18 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=403,
      *         description="Only admins can add crew members",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Only admins can add crew members")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=208,
-     *         description="Crew Member already exists",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Crew Member already exists")
      *         )
      *     )
      * )
@@ -238,22 +278,22 @@ class CrewMembersAPI extends AbstractFOSRestController
     public function postCrewMember(Request $request): View
     {
         if(!$this->isGranted("ROLE_ADMIN"))
-            return View::create("Only admins can add crew members", Response::HTTP_FORBIDDEN);
+            return View::create(["message" => "Only admins can add crew members"], Response::HTTP_FORBIDDEN);
 
         $data = json_decode($request->getContent());
 
         if(empty($data->name) || empty($data->role))
-            return View::create("Invalid body, missing parameters", Response::HTTP_BAD_REQUEST);
+            return View::create(["message" => "Invalid body, missing parameters"], Response::HTTP_BAD_REQUEST);
 
         $crewMember = new CrewMember();
         $role = CrewMemberRole::tryFrom($data->role);
 
         if(empty($role))
-            return View::create("Invalid Role", Response::HTTP_BAD_REQUEST);
+            return View::create(["message" => "Invalid Role"], Response::HTTP_BAD_REQUEST);
 
         $existingCrewMember = $this->crewMemberRepository->findOneBy(["name" => $data->name, "role" => $role]);
         if($existingCrewMember)
-            return View::create("Crew Member already exists", Response::HTTP_ALREADY_REPORTED);
+            return View::create(["message" => "Crew Member already exists"], Response::HTTP_ALREADY_REPORTED);
 
         $crewMember->setRole($role->value);
         $crewMember->setName($data->name);
@@ -261,7 +301,7 @@ class CrewMembersAPI extends AbstractFOSRestController
         $this->entityManager->persist($crewMember);
         $this->entityManager->flush();
 
-        return View::create("Successfully created Crew Member", Response::HTTP_CREATED)->setLocation("api/v1/crewMembers/" . $crewMember->getId());
+        return View::create(["message" => "Successfully created Crew Member"], Response::HTTP_CREATED)->setLocation("api/v1/crewMembers/" . $crewMember->getId());
     }
 
     /**
@@ -284,6 +324,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Crew member not found",
      *         @OA\JsonContent(
@@ -303,15 +351,15 @@ class CrewMembersAPI extends AbstractFOSRestController
     public function deleteCrewMember(int $id): View
     {
         if(!$this->isGranted("ROLE_ADMIN"))
-            return View::create("Only admins can delete crew members", Response::HTTP_FORBIDDEN);
+            return View::create(["message" => "Only admins can delete crew members"], Response::HTTP_FORBIDDEN);
 
         $crewMember = $this->crewMemberRepository->find($id);
         if(!$crewMember)
-            return View::create("Crew Member not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Crew Member not found"], Response::HTTP_NOT_FOUND);
 
         $this->entityManager->remove($crewMember);
         $this->entityManager->flush();
 
-        return View::create("Successfully deleted Crew Member", Response::HTTP_OK);
+        return View::create(["message" => "Successfully deleted Crew Member"], Response::HTTP_OK);
     }
 }

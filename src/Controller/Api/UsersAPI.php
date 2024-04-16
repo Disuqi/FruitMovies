@@ -43,6 +43,14 @@ class UsersAPI extends AbstractController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Out of range",
      *         @OA\JsonContent(
@@ -61,7 +69,7 @@ class UsersAPI extends AbstractController
 
         $totalPages = $this->userRepository->getTotalPages();
         if($page > $totalPages)
-            return View::create("Out of range", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Out of range"], Response::HTTP_NOT_FOUND);
 
         if(!$page || $page == "")
             $page = 1;
@@ -88,6 +96,14 @@ class UsersAPI extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/User")
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="User not found",
      *         @OA\JsonContent(
@@ -101,7 +117,7 @@ class UsersAPI extends AbstractController
     {
         $user = $this->userRepository->find($id);
         if(!$user)
-            return View::create("User not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "User not found"], Response::HTTP_NOT_FOUND);
 
         return View::create($user, Response::HTTP_OK);
     }
@@ -127,6 +143,14 @@ class UsersAPI extends AbstractController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="User not found",
      *         @OA\JsonContent(
@@ -140,7 +164,7 @@ class UsersAPI extends AbstractController
     {
         $user = $this->userRepository->find($id);
         if(!$user)
-            return View::create("User not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "User not found"], Response::HTTP_NOT_FOUND);
 
         return View::create($user->getReviews(), Response::HTTP_OK);
     }

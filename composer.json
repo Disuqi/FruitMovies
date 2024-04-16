@@ -21,7 +21,7 @@
         "guzzlehttp/guzzle": "^7.8",
         "jms/serializer-bundle": "^5.4",
         "lexik/jwt-authentication-bundle": "^2.18",
-        "nelmio/cors-bundle": "^2.4",
+        "nelmio/cors-bundle": "*",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.24",
         "sensio/framework-extra-bundle": "^6.2",

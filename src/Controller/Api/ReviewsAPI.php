@@ -3,12 +3,9 @@
 namespace App\Controller\Api;
 
 use App\Entity\Review;
-use App\Entity\ReviewVote;
 use App\Form\ReviewApiFormType;
-use App\Form\ReviewVoteApiFormType;
 use App\Repository\MovieRepository;
 use App\Repository\ReviewRepository;
-use App\Repository\ReviewVoteRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -35,6 +32,13 @@ class ReviewsAPI extends AbstractFOSRestController
      *     path="/api/v1/reviews",
      *     summary="Get a page of reviews",
      *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="Authorization",
+     *         in="header",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Bearer token needed for this operation"
+     *     ),
      *     @OA\RequestBody(
      *         description="Page data",
      *         required=false,
@@ -71,7 +75,7 @@ class ReviewsAPI extends AbstractFOSRestController
 
         $totalPages = $this->reviewRepository->getTotalPages();
         if($page > $totalPages)
-            return View::create("Out of range", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Out of range"], Response::HTTP_NOT_FOUND);
 
         if(!$page || $page == "")
             $page = 1;
@@ -84,6 +88,13 @@ class ReviewsAPI extends AbstractFOSRestController
      *     path="/api/v1/reviews/{id}",
      *     summary="Get a review by its ID",
      *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="Authorization",
+     *         in="header",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Bearer token needed for this operation"
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -111,7 +122,7 @@ class ReviewsAPI extends AbstractFOSRestController
         $review = $this->reviewRepository->find($id);
 
         if(!$review)
-            return View::create("Review not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Review not found"], Response::HTTP_NOT_FOUND);
 
         return View::create($review, Response::HTTP_OK);
     }
@@ -121,6 +132,13 @@ class ReviewsAPI extends AbstractFOSRestController
      *     path="/api/v1/reviews/{id}/votes",
      *     summary="Get the votes of a review",
      *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="Authorization",
+     *         in="header",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Bearer token needed for this operation"
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -133,7 +151,7 @@ class ReviewsAPI extends AbstractFOSRestController
      *         description="Votes retrieved successfully",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Vote")
+     *             @OA\Items(ref="#/components/schemas/ReviewVote")
      *         )
      *     ),
      *     @OA\Response(
@@ -151,7 +169,7 @@ class ReviewsAPI extends AbstractFOSRestController
         $review = $this->reviewRepository->find($id);
 
         if(!$review)
-            return View::create("Review not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Review not found"], Response::HTTP_NOT_FOUND);
 
         $votes = $review->getReviewVotes();
 
@@ -166,21 +184,33 @@ class ReviewsAPI extends AbstractFOSRestController
      *     @OA\RequestBody(
      *         description="Review data",
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ReviewApiFormType")
+     *         @OA\JsonContent(ref="#/components/schemas/NewReview")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="Successfully added review",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Successfully added review")
+     *         ),
+     *         @OA\Header(
+     *             header="Location",
+     *             description="URL of the new review",
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
      *         response=400,
      *         description="Bad request",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Error")
+     *             @OA\Property(property="error message", type="string", example="Something is wrong in your request")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
      *         )
      *     ),
      *     @OA\Response(
@@ -214,18 +244,18 @@ class ReviewsAPI extends AbstractFOSRestController
 
             $movie = $movieRepository->find($data["movie_id"]);
             if(!$movie)
-                return View::create("Movie not found", Response::HTTP_NOT_FOUND);
+                return View::create(["message" => "Movie not found"], Response::HTTP_NOT_FOUND);
             $review->setMovie($movie);
 
             $existingReview = $this->reviewRepository->findOneBy(["user" => $user, "movie" => $movie]);
             if($existingReview)
-                return View::create("Review already exists", Response::HTTP_CONFLICT)->setLocation("/api/v1/reviews/" . $existingReview->getId());
+                return View::create(["message" => "Review already exists"], Response::HTTP_CONFLICT)->setLocation("/api/v1/reviews/" . $existingReview->getId());
 
             $review->setDateReviewed(new \DateTimeImmutable());
             $this->entityManager->persist($review);
             $this->entityManager->flush();
 
-            return View::create("Successfully added review",  Response::HTTP_CREATED)->setLocation("/api/v1/reviews/" . $review->getId());
+            return View::create(["message" => "Successfully added review"],  Response::HTTP_CREATED)->setLocation("/api/v1/reviews/" . $review->getId());
         }
         return View::create($form->getErrors(), Response::HTTP_BAD_REQUEST);
     }
@@ -245,21 +275,33 @@ class ReviewsAPI extends AbstractFOSRestController
      *     @OA\RequestBody(
      *         description="Review data",
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ReviewApiFormType")
+     *         @OA\JsonContent(ref="#/components/schemas/NewReview")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=202,
      *         description="Successfully updated review",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Successfully updated review")
+     *         ),
+     *         @OA\Header(
+     *             header="Location",
+     *             description="URL of the updated review",
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
      *         response=400,
      *         description="Bad request",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Error")
+     *             @OA\Property(property="error message", type="string", example="Something is wrong in your request")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
      *         )
      *     ),
      *     @OA\Response(
@@ -283,11 +325,11 @@ class ReviewsAPI extends AbstractFOSRestController
     {
         $review = $this->reviewRepository->find($id);
         if(!$review)
-            return View::create("Review not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Review not found"], Response::HTTP_NOT_FOUND);
 
         $user = $this->getUser();
         if($review->getUser() != $user)
-            return View::create("Cannot change another user's review", Response::HTTP_FORBIDDEN);
+            return View::create(["message" => "Cannot change another user's review"], Response::HTTP_FORBIDDEN);
 
         $form = $this->createForm( ReviewApiFormType::class, $review);
         $data = json_decode($request->getContent(), true);
@@ -297,13 +339,13 @@ class ReviewsAPI extends AbstractFOSRestController
         {
             $movie = $movieRepository->find($data["movie_id"]);
             if(!$movie)
-                return View::create("Movie not found", Response::HTTP_NOT_FOUND);
+                return View::create(["message" => "Movie not found"], Response::HTTP_NOT_FOUND);
             $review->setMovie($movie);
 
             $this->entityManager->persist($review);
             $this->entityManager->flush();
 
-            return View::create("Successfully updated review",  Response::HTTP_OK);
+            return View::create(["message" => "Successfully updated review"],  Response::HTTP_ACCEPTED)->setLocation("/api/v1/reviews/" . $review->getId());
         }
         return View::create($form->getErrors(), Response::HTTP_NOT_FOUND);
     }
@@ -328,6 +370,14 @@ class ReviewsAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=403,
      *         description="Cannot delete another user's review",
      *         @OA\JsonContent(
@@ -348,15 +398,15 @@ class ReviewsAPI extends AbstractFOSRestController
     {
         $review = $this->reviewRepository->find($id);
         if(!$review)
-            return View::create("Review not found", Response::HTTP_NOT_FOUND);
+            return View::create(["message" => "Review not found"], Response::HTTP_NOT_FOUND);
 
         $user = $this->getUser();
         if($review->getUser() !== $user && !$this->isGranted("ROLE_ADMIN"))
-            return View::create("Cannot delete another user's review", Response::HTTP_FORBIDDEN);
+            return View::create(["message" => "Cannot delete another user's review"], Response::HTTP_FORBIDDEN);
 
         $this->entityManager->remove($review);
         $this->entityManager->flush();
 
-        return View::create("Successfully deleted review", Response::HTTP_OK);
+        return View::create(["message" => "Successfully deleted review"], Response::HTTP_OK);
     }
 }

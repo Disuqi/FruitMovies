@@ -1,6 +1,154 @@
 {
     "openapi": "3.0.0",
+    "info": {
+        "title": "Fruit Movies API",
+        "contact": {
+            "email": "support@fruitmovies.com"
+        },
+        "version": "1.0.0"
+    },
     "paths": {
+        "/api/login_check": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "description": "Login and get JWT token",
+                "operationId": "14e1b5be0cb5e2c3cd6a595ba1e2525e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "Username"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "?pA$$w0rd!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/token/refresh": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "description": "Refresh JWT token",
+                "operationId": "048337584c9576fb0519882d52ae09ca",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing JWT Refresh Token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Missing JWT Refresh Token"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/docs": {
+            "get": {
+                "tags": [
+                    "Documentation"
+                ],
+                "summary": "Get API Documentation",
+                "description": "Get API Documentation",
+                "operationId": "f59e5745d8cba62f3674131a6a13bb6a",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "openapi": {
+                                            "type": "string"
+                                        },
+                                        "info": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "contact": {
+                                                    "properties": {
+                                                        "email": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "paths": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/crewMembers": {
             "get": {
                 "tags": [
@@ -58,6 +206,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "400": {
                         "description": "Bad request",
                         "content": {
@@ -74,7 +242,14 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            "user"
+                        ]
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -96,6 +271,14 @@
                 "responses": {
                     "201": {
                         "description": "Crew member created successfully",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the new crew memeber",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -103,6 +286,22 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Successfully created Crew Member"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "208": {
+                        "description": "Crew Member already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Crew Member already exists"
                                         }
                                     },
                                     "type": "object"
@@ -126,6 +325,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "403": {
                         "description": "Only admins can add crew members",
                         "content": {
@@ -135,22 +354,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Only admins can add crew members"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "208": {
-                        "description": "Crew Member already exists",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Crew Member already exists"
                                         }
                                     },
                                     "type": "object"
@@ -190,21 +393,28 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Crew member not found",
+                    "401": {
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Crew member not found"
+                                            "example": "JWT Token not found"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Crew member not found"
                     }
                 }
             },
@@ -237,28 +447,20 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": "Crew member updated successfully",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the updated crew member",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrewMember"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Crew member not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Crew member not found"
-                                        }
-                                    },
-                                    "type": "object"
                                 }
                             }
                         }
@@ -272,6 +474,42 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Invalid input"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Crew member not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Crew member not found"
                                         }
                                     },
                                     "type": "object"
@@ -308,6 +546,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Successfully deleted Crew Member"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
                                         }
                                     },
                                     "type": "object"
@@ -393,6 +651,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Page not found",
                         "content": {
@@ -423,7 +701,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Movie"
+                                "$ref": "#/components/schemas/NewMovie"
                             }
                         }
                     }
@@ -431,6 +709,14 @@
                 "responses": {
                     "201": {
                         "description": "Movie created successfully",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the new movie",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -454,6 +740,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Invalid input"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
                                         }
                                     },
                                     "type": "object"
@@ -525,6 +831,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Movie not found",
                         "content": {
@@ -574,6 +900,14 @@
                 "responses": {
                     "202": {
                         "description": "Movie updated successfully",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the updated movie",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -597,6 +931,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Invalid input"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
                                         }
                                     },
                                     "type": "object"
@@ -665,6 +1019,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Successfully deleted movie"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
                                         }
                                     },
                                     "type": "object"
@@ -747,6 +1121,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Movie not found",
                         "content": {
@@ -794,12 +1188,40 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": "Crew members updated successfully",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the updated movie",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrewMember"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -862,6 +1284,17 @@
                 ],
                 "summary": "Get a page of reviews",
                 "operationId": "dada4e5ef2019eed08806b379a8cfaa7",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token needed for this operation",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "description": "Page data",
                     "required": false,
@@ -934,7 +1367,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ReviewApiFormType"
+                                "$ref": "#/components/schemas/NewReview"
                             }
                         }
                     }
@@ -942,6 +1375,14 @@
                 "responses": {
                     "201": {
                         "description": "Successfully added review",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the new review",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -961,10 +1402,33 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Error"
-                                    }
+                                    "properties": {
+                                        "error message": {
+                                            "type": "string",
+                                            "example": "Something is wrong in your request"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1012,6 +1476,15 @@
                 "summary": "Get a review by its ID",
                 "operationId": "37bd43cc2432b16eef1d877b9216989f",
                 "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token needed for this operation",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -1074,14 +1547,22 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ReviewApiFormType"
+                                "$ref": "#/components/schemas/NewReview"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": "Successfully updated review",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the updated review",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1101,10 +1582,33 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Error"
-                                    }
+                                    "properties": {
+                                        "error message": {
+                                            "type": "string",
+                                            "example": "Something is wrong in your request"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1177,6 +1681,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "403": {
                         "description": "Cannot delete another user's review",
                         "content": {
@@ -1221,6 +1745,15 @@
                 "operationId": "9e26a877eb9f348dd662979f9aa4351e",
                 "parameters": [
                     {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token needed for this operation",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "id",
                         "in": "path",
                         "description": "The ID of the review",
@@ -1238,7 +1771,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/Vote"
+                                        "$ref": "#/components/schemas/ReviewVote"
                                     }
                                 }
                             }
@@ -1306,6 +1839,26 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Out of range",
                         "content": {
@@ -1350,6 +1903,26 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1401,6 +1974,26 @@
                                     "items": {
                                         "$ref": "#/components/schemas/Review"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JWT Token not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1530,6 +2123,27 @@
                 },
                 "type": "object"
             },
+            "ReviewVote": {
+                "required": [
+                    "userId",
+                    "liked"
+                ],
+                "properties": {
+                    "review_id": {
+                        "type": "integer",
+                        "example": "20"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "liked": {
+                        "type": "boolean",
+                        "example": "true"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "title": "User model",
                 "description": "User model",
@@ -1563,6 +2177,54 @@
                 },
                 "type": "object"
             },
+            "NewMovie": {
+                "required": [
+                    "title",
+                    "overview"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Example Movie Title"
+                    },
+                    "overview": {
+                        "type": "string",
+                        "example": "This is an example overview"
+                    },
+                    "running_time": {
+                        "type": "integer",
+                        "example": "120"
+                    },
+                    "release_date": {
+                        "type": "string",
+                        "example": "dd-mm-yyyy"
+                    }
+                },
+                "type": "object"
+            },
+            "NewReview": {
+                "required": [
+                    "score",
+                    "comment",
+                    "user_id",
+                    "movie_id"
+                ],
+                "properties": {
+                    "score": {
+                        "type": "integer",
+                        "example": "5"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Great Movie"
+                    },
+                    "movie_id": {
+                        "type": "integer",
+                        "example": "20"
+                    }
+                },
+                "type": "object"
+            },
             "CrewMemberRole": {
                 "title": "CrewMemberRole",
                 "description": "CrewMemberRole enum",
@@ -1588,6 +2250,16 @@
                     "director"
                 ],
                 "example": "actor"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "JWT Authentication",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }

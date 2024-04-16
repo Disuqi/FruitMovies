@@ -1,0 +1,1025 @@
+{
+	"info": {
+		"_postman_id": "31566e5b-5ed1-409f-aa01-ad19ba02a0eb",
+		"name": "Fruit Movies",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17706130"
+	},
+	"item": [
+		{
+			"name": "Docs",
+			"item": [
+				{
+					"name": "Get Docs",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"superadmin\",\r\n    \"password\" : \"superadmin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/login_check",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"login_check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Token Refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/token/refresh",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"token",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movies",
+			"item": [
+				{
+					"name": "Get Movies",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Movie",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"API Test Movie\",\r\n    \"overview\": \"Changed overview\",\r\n    \"running_time\": 200,\r\n    \"release_date\" : \"22-12-2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Movie",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"API Test Movie\",\r\n    \"overview\": \"Changed overview\",\r\n    \"running_time\": 200,\r\n    \"release_date\" : \"22-12-2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "cover_photo",
+									"type": "file",
+									"src": "postman-cloud:///1eefc377-3f96-48b0-b0dd-359b7c08097b"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713/image",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Movie",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie Crew",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713/crewMembers",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713",
+								"crewMembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Movie Crew",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actors\": [\r\n        {\"id\": 5262},\r\n        {\"id\": 3453}\r\n    ],\r\n    \"director\": {\"id\": 125}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/movies/1203713/crewMembers",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"movies",
+								"1203713",
+								"crewMembers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Get Reviews",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews/237",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"237"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review Votes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews/237/votes",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"237",
+								"votes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"score\": 5,\r\n    \"comment\": \"Average Movie\",\r\n    \"movie_id\": 666\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"score\": 10,\r\n    \"comment\": \"Good Movie\",\r\n    \"movie_id\": 666\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews/5541",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"5541"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/reviews/5541",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"5541"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/users/1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Reviews",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/users/1/reviews",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Crew Members",
+			"item": [
+				{
+					"name": "Get Crew Members",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/crewMembers",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"crewMembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Crew Member By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/crewMembers/1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"crewMembers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Crew Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"API Test\",\r\n    \"photo\": null,\r\n    \"role\": \"actor\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/crewMembers",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"crewMembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Crew Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"API Test\",\r\n    \"photo\": null,\r\n    \"role\": \"director\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/crewMembers/67048",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"crewMembers",
+								"67048"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Crew Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTMzMDE2NDMsImV4cCI6MTcxMzM0NDg0Mywicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6InN1cGVyYWRtaW4ifQ.N_lHqe5N17ChWL66stOuux8N-gTGESo5w80L4iwSpPNMRTtnKBx4h55tpL2y_BijKv-ZcLxxS_Le6tHi-xM-9jEUGW0j4gndkwWIzmLmgiCMoPwX4a5BTpmu9co_fWKBRzVNeUFXlGhXos47LmltwqS0OlF57vqh056k5JDMIqC8WCLEBCILZ0dkGJ6vcEnZT8B2T8U1K399wEmTjEpaJOQ7KtbIqFg5merI8CGJRTyQsESnUu7wM5Z13mAqEZti1sjpCTMFiyCvWsQufkLSUkXP3B9dMQJ56Iek9d80o_es0hMIKvHekPwjUqivaym6ccNFbdtKVaAJWNrN32Jl-gk_dhFg0PUXHLbPUyUUtL6lOXgwpJk62Z0cbGYfW1q0UTi-qqkZpHN3xqRTZuZNYMX-Pg6_lMjAWfmbYffs0nSNHSlkrUTGAovKHuXZNfKoO2iYPou_0CATF1-eq3WRgeHp7A_Ilp5uF9VYo4xzanqQ5_Iy3B8hZN6Ad0tKO6xPOSIDuzd9KUBKk2n3y6puh3Tt6ec5CBUW3dckArhtRi4ecXkk-hkdXRsja4MNSBbDHiNxTo1c3q2Iw7LTIj-Uj6Sp-Ql3lta4K7bQzjbMTxFSbRBOgxlNyukz64rWKn8Kiv92Gyuy7y_ThJ12hSNTHg6VuXGi0k8e2tDVAp2hCS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/v1/crewMembers/67048",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"crewMembers",
+								"67048"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4b29be794f84f236760f47b184542d3",
+    "content-hash": "cea7e438f507559a60a065f2262ee9aa",
     "packages": [
         {
             "name": "awd/image-saver",
