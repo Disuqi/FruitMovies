@@ -16,6 +16,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class MoviesAPI extends AbstractFOSRestController
 {
@@ -28,6 +30,37 @@ class MoviesAPI extends AbstractFOSRestController
         $this->movieRepository = $movieRepository;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/movies",
+     *     summary="Get a page of movies",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="The page number",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Page of movies retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="results", type="array", @OA\Items(ref="#/components/schemas/Movie")),
+     *             @OA\Property(property="current_page", type="integer"),
+     *             @OA\Property(property="total_pages", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Page not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/movies", name: "getMovies")]
     public function getMovies(Request $request): View
     {
@@ -47,6 +80,32 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create($searchResult, Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/movies/{id}",
+     *     summary="Get a specific movie by ID",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the movie",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Movie retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Movie")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/movies/{id}", name: "getMovie")]
     public function getMovie(int $id): View
     {
@@ -57,6 +116,46 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create($movie, Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/movies",
+     *     summary="Create a new movie",
+     *     tags={"Movies"},
+     *     @OA\RequestBody(
+     *         description="Movie data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Movie")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Movie created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully added Movie")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid input")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only admins can create movies",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only admins can create movies")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Movie already exists",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie already exists")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Post("api/v1/movies", name: "postMovie")]
     public function postMovie(Request $request): View
     {
@@ -91,6 +190,53 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create($form->getErrors(), Response::HTTP_BAD_REQUEST);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/v1/movies/{id}",
+     *     summary="Update an existing movie",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the movie to update",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Movie data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Movie")
+     *     ),
+     *     @OA\Response(
+     *         response=202,
+     *         description="Movie updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully updated Movie")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid input")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only admins can modify movies",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only admins can modify movies")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Put("api/v1/movies/{id}", name: "putMovie")]
     public function putMovie(Request $request, int $id) : View
     {
@@ -114,6 +260,38 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create($form->getErrors(), Response::HTTP_BAD_REQUEST);
     }
 
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/movies",
+     *     summary="Create a new movie",
+     *     tags={"Movies"},
+     *     @OA\RequestBody(
+     *         description="Movie data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Movie")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Movie created successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Movie")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid input")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only admins can create movies",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only admins can create movies")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Post("api/v1/movies/{id}/image", name:"postMovieImage")]
     public function postMovieImage(Request $request, ImageSaver $imageSaver, int $id): View
     {
@@ -140,6 +318,41 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create("Successfully saved movie image", Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/movies/{id}",
+     *     summary="Delete a movie",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the movie to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Movie deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully deleted movie")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only admins can delete movies",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only admins can delete movies")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Delete("api/v1/movies/{id}", name: "deleteMovie")]
     public function deleteMovie(int $id) : View
     {
@@ -156,6 +369,36 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create("Successfully deleted movie", Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/movies/{id}/crewMembers",
+     *     summary="Get the crew members of a movie",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the movie",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Crew members retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="director", type="string"),
+     *             @OA\Property(property="actors", type="array", @OA\Items(type="string"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/movies/{id}/crewMembers", name: "getMovieCrewMembers")]
     public function getMovieCrewMembers(int $id): View
     {
@@ -166,6 +409,51 @@ class MoviesAPI extends AbstractFOSRestController
         return View::create(["director" => $movie->getDirector(), "actors" => $movie->getActors()], Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/v1/movies/{id}/crewMembers",
+     *     summary="Update the crew members of a specific movie",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the movie",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Crew member data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Crew members updated successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/CrewMember")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie or crew member not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie or crew member not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid input")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only admins can edit movies",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only admins can edit movies")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Put("api/v1/movies/{id}/crewMembers", name:"putMovieCrewMembers")]
     public function putMovieCrewMembers(Request $request, CrewMemberRepository $crewMemberRepository, MovieCrewMemberRepository $movieCrewMemberRepository, int $id): View
     {

@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 abstract class PaginatedEntityRepository extends ServiceEntityRepository
 {
+    protected const PAGE_SIZE = 18;
+
     public function getPage(int $page = 1) : SearchResult
     {
         $totalPages = $this->getTotalPages();
@@ -19,8 +21,8 @@ abstract class PaginatedEntityRepository extends ServiceEntityRepository
 
         $results = $this->createQueryBuilder("m")
             ->select("m")
-            ->setFirstResult(($page - 1) * PAGE_SIZE)
-            ->setMaxResults(PAGE_SIZE)
+            ->setFirstResult(($page - 1) * self::PAGE_SIZE)
+            ->setMaxResults(self::PAGE_SIZE)
             ->getQuery()
             ->getResult();
 
@@ -35,6 +37,6 @@ abstract class PaginatedEntityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return ceil($totalCount/PAGE_SIZE);
+        return ceil($totalCount/self::PAGE_SIZE);
     }
 }

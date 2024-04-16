@@ -4,10 +4,11 @@ namespace App\Services\Errors;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ErrorHandler
 {
-    public static function GetAndClearErrors(Session $session) : array
+    public static function GetAndClearErrors(SessionInterface $session) : array
     {
         $errors = $session->get("errors");
         if(!$errors) $errors = [];

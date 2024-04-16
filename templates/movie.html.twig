@@ -199,10 +199,16 @@
         navigator.geolocation.getCurrentPosition(
             (pos)=>
             {
+                console.log("Got location");
                 searchCinemasNearby(pos.coords.latitude, pos.coords.longitude);
             }, (error) =>
             {
-                console.log("Failed to get pos")
+                console.log("Could not get location");
+                const couldNotGetLocation = document.createElement("p");
+                couldNotGetLocation.textContent = "Could not get your location";
+                couldNotGetLocation.className = "text-xl text-gray-500 font-semibold";
+                cinemas.replaceChildren();
+                cinemas.append(couldNotGetLocation);
             });
     </script>
 {% endblock %}

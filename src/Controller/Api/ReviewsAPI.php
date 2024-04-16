@@ -16,6 +16,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
+
 
 class ReviewsAPI extends AbstractFOSRestController
 {
@@ -28,6 +30,37 @@ class ReviewsAPI extends AbstractFOSRestController
         $this->reviewRepository = $reviewRepository;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/reviews",
+     *     summary="Get a page of reviews",
+     *     tags={"Reviews"},
+     *     @OA\RequestBody(
+     *         description="Page data",
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="page", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reviews retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="results", type="array", @OA\Items(ref="#/components/schemas/Review")),
+     *             @OA\Property(property="current_page", type="integer"),
+     *             @OA\Property(property="total_pages", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Out of range",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Out of range")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/reviews", name: "getReviews")]
     public function getReviews(Request $request): View
     {
@@ -46,6 +79,32 @@ class ReviewsAPI extends AbstractFOSRestController
         return View::create($searchResult, Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/reviews/{id}",
+     *     summary="Get a review by its ID",
+     *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the review",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Review")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/reviews/{id}", name: "getReview")]
     public function getReview(int $id): View
     {
@@ -57,6 +116,35 @@ class ReviewsAPI extends AbstractFOSRestController
         return View::create($review, Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/reviews/{id}/votes",
+     *     summary="Get the votes of a review",
+     *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the review",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Votes retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Vote")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Get("api/v1/reviews/{id}/votes", name: "getReviewVotes")]
     public function getReviewVotes(int $id): View
     {
@@ -70,6 +158,47 @@ class ReviewsAPI extends AbstractFOSRestController
         return View::create($votes, Response::HTTP_OK);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/reviews",
+     *     summary="Create a new review",
+     *     tags={"Reviews"},
+     *     @OA\RequestBody(
+     *         description="Review data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewApiFormType")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Successfully added review",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully added review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Error")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Movie not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Review already exists",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review already exists")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Post("api/v1/reviews", name: "postReview")]
     public function postReview(Request $request, UserRepository $userRepository, MovieRepository $movieRepository): View
     {
@@ -101,6 +230,54 @@ class ReviewsAPI extends AbstractFOSRestController
         return View::create($form->getErrors(), Response::HTTP_BAD_REQUEST);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/v1/reviews/{id}",
+     *     summary="Update a review",
+     *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the review",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Review data",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewApiFormType")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully updated review",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully updated review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Error")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Cannot change another user's review",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Cannot change another user's review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review or movie not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review or movie not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Put("api/v1/reviews/{id}", name: "putReview")]
     public function putReview(Request $request, int $id, UserRepository $userRepository, MovieRepository $movieRepository): View
     {
@@ -131,6 +308,41 @@ class ReviewsAPI extends AbstractFOSRestController
         return View::create($form->getErrors(), Response::HTTP_NOT_FOUND);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/reviews/{id}",
+     *     summary="Delete a review",
+     *     tags={"Reviews"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The ID of the review",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully deleted review",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully deleted review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Cannot delete another user's review",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Cannot delete another user's review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review not found")
+     *         )
+     *     )
+     * )
+     */
     #[Rest\Delete("api/v1/reviews/{id} ", name: "deleteReview")]
     public function deleteReview(int $id) : View
     {

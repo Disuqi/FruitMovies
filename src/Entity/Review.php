@@ -8,30 +8,56 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *   description="Review model",
+ *   type="object",
+ *   title="Review model"
+ * )
+ */
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\UniqueConstraint(name: "movie_user_unique", columns: ["movie_id", "user_id"])]
 class Review
 {
+    /**
+     * @OA\Property(description="ID of the review", format="int64", example=1)
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @OA\Property(description="Movie that the review is for", ref="#/components/schemas/Movie")
+     */
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Movie $movie = null;
 
+    /**
+     * @OA\Property(description="User that wrote the review", ref="#/components/schemas/User")
+     */
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?User $user = null;
 
+    /**
+     * @OA\Property(description="Score of the review", type="integer", example=5)
+     */
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $score = null;
 
+    /**
+     * @OA\Property(description="Comment of the review", type="string", example="This movie was amazing!")
+     */
     #[ORM\Column(type: Types::TEXT)]
     private ?string $comment = null;
 
+    /**
+     * @OA\Property(description="Date the review was written", type="string", example="2022-01-01T00:00:00+00:00")
+     */
     #[ORM\Column]
     private ?\DateTimeImmutable $date_reviewed = null;
 
