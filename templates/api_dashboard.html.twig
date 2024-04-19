@@ -1,0 +1,16 @@
+{% extends 'components/base.html.twig' %}
+
+{% block title %}API Documentation{% endblock %}
+
+{% block additional_head %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/swagger-ui.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/swagger.css') }}" />
+{% endblock %}
+
+{% block body %}
+    {{ include('components/header.html.twig') }}
+    <div class="bg-white" id="swagger-ui"></div>
+    <script src="{{ asset('assets/swagger-ui-bundle.js')}}" charset="UTF-8"> </script>
+    <script src="{{ asset('assets/swagger-ui-standalone-preset.js')}}" charset="UTF-8"> </script>
+    <script src="{{ asset('assets/swagger-initializer.js')}}" charset="UTF-8"> </script>
+{% endblock %}

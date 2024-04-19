@@ -69,9 +69,12 @@ class ReviewsAPI extends AbstractFOSRestController
     public function getReviews(Request $request): View
     {
         $contents = json_decode($request->getContent());
+
         $page = 1;
-        if(isset($contents->page))
+        if(isset($contents->page) && is_int($contents->page))
             $page = $contents->page;
+        if($request->query->getInt("page"))
+            $page = $request->query->getInt("page");
 
         $totalPages = $this->reviewRepository->getTotalPages();
         if($page > $totalPages)
@@ -214,6 +217,14 @@ class ReviewsAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Movie not found",
      *         @OA\JsonContent(
@@ -305,6 +316,14 @@ class ReviewsAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=403,
      *         description="Cannot change another user's review",
      *         @OA\JsonContent(
@@ -375,6 +394,14 @@ class ReviewsAPI extends AbstractFOSRestController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(

@@ -51,6 +51,14 @@ class UsersAPI extends AbstractController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Out of range",
      *         @OA\JsonContent(
@@ -63,9 +71,12 @@ class UsersAPI extends AbstractController
     public function getUsers(Request $request): View
     {
         $contents = json_decode($request->getContent());
+
         $page = 1;
-        if(isset($contents->page))
+        if(isset($contents->page) && is_int($contents->page))
             $page = $contents->page;
+        if($request->query->getInt("page"))
+            $page = $request->query->getInt("page");
 
         $totalPages = $this->userRepository->getTotalPages();
         if($page > $totalPages)
@@ -101,6 +112,14 @@ class UsersAPI extends AbstractController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(
@@ -148,6 +167,14 @@ class UsersAPI extends AbstractController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(

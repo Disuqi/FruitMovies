@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
@@ -69,6 +70,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=400,
      *         description="Bad request",
      *         @OA\JsonContent(
@@ -81,13 +90,18 @@ class CrewMembersAPI extends AbstractFOSRestController
     public function getCrewMembers(Request $request): View
     {
         $contents = json_decode($request->getContent());
+
         $page = 1;
-        if(!empty($contents->page))
+        if(isset($contents->page) && is_int($contents->page))
             $page = $contents->page;
+        if($request->query->getInt("page"))
+            $page = $request->query->getInt("page");
 
         $role = null;
-        if(!empty($contents->role))
+        if(isset($contents->role))
             $role = CrewMemberRole::tryFrom($contents->role);
+        if($request->query->get("role"))
+            $role = CrewMemberRole::tryFrom($request->query->get("role"));
 
         $totalPages = $this->crewMemberRepository->getTotalPages($role);
         if($page > $totalPages)
@@ -96,7 +110,6 @@ class CrewMembersAPI extends AbstractFOSRestController
         $searchResult = $this->crewMemberRepository->getCrewMembersPage($page, $role);
         return View::create($searchResult, Response::HTTP_OK);
     }
-
 
      /**
      * @OA\Get(
@@ -121,6 +134,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(
@@ -179,6 +200,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(
@@ -266,6 +295,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=403,
      *         description="Only admins can add crew members",
      *         @OA\JsonContent(
@@ -329,6 +366,14 @@ class CrewMembersAPI extends AbstractFOSRestController
      *         @OA\JsonContent(
      *             @OA\Property(property="code", type="int", example="401"),
      *             @OA\Property(property="message", type="string", example="JWT Token not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Expired Token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="int", example="401"),
+     *             @OA\Property(property="message", type="string", example="Expired JWT Token")
      *         )
      *     ),
      *     @OA\Response(

@@ -31,6 +31,8 @@ enum Roles : string
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public string $current_token;
+
     /**
      * @OA\Property(description="ID of the user", format="int64", example=1)
      */
