@@ -3,12 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
-use App\Utils;
 use App\Utils\Search\MoviesSearchOptions;
 use App\Utils\Search\OrderMoviesBy;
 use App\Utils\Search\SearchResult;
 use App\Utils\Search\SortOrder;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,9 +43,8 @@ class MovieRepository extends PaginatedEntityRepository
                 ->setParameter("searchTerm", "%" . $options->searchQuery . "%");
         }
 
-
         $totalCount = $countQb->getQuery()->getSingleScalarResult();
-        $totalPages = ceil($totalCount/PAGE_SIZE);
+        $totalPages = ceil($totalCount/PaginatedEntityRepository::PAGE_SIZE);
 
         if($totalPages == 0)
         {
@@ -61,8 +58,8 @@ class MovieRepository extends PaginatedEntityRepository
 
         if($options->page > 0)
         {
-            $qb->setFirstResult(($options->page - 1) * PAGE_SIZE)
-                ->setMaxResults(PAGE_SIZE);
+            $qb->setFirstResult(($options->page - 1) * PaginatedEntityRepository::PAGE_SIZE)
+                ->setMaxResults(PaginatedEntityRepository::PAGE_SIZE);
         }
         $results = $qb->getQuery()->getResult();
 

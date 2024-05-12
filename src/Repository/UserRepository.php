@@ -28,12 +28,15 @@ class UserRepository extends PaginatedEntityRepository
             ->where("u.username LIKE :username")
             ->setParameter("username", "%".$username."%");
 
-        $totalPages = $this->getTotalPages();
+        $countQb = clone $qb;
+        $totalPages = $countQb->select("COUNT(DISTINCT u.id)")
+                        ->getQuery()
+                        ->getSingleScalarResult();
 
         if($page > 0)
         {
-            $qb->setFirstResult(($page - 1) * PAGE_SIZE)
-                ->setMaxResults(PAGE_SIZE);
+            $qb->setFirstResult(($page - 1) * PaginatedEntityRepository::PAGE_SIZE)
+                ->setMaxResults(PaginatedEntityRepository::PAGE_SIZE);
         }
         $results =  $qb->getQuery()->getResult();
         return new SearchResult($results, $page, $totalPages);

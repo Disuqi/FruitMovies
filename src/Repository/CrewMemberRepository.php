@@ -8,7 +8,7 @@ use App\Utils\Search\SearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class CrewMemberRepository extends ServiceEntityRepository
+class CrewMemberRepository extends PaginatedEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -29,8 +29,8 @@ class CrewMemberRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder("m")
             ->select("m")
-            ->setFirstResult(($page - 1) * PAGE_SIZE)
-            ->setMaxResults(PAGE_SIZE);
+            ->setFirstResult(($page - 1) * PaginatedEntityRepository::PAGE_SIZE)
+            ->setMaxResults(PaginatedEntityRepository::PAGE_SIZE);
 
         if($role)
             $qb->where("m.role = :role")->setParameter("role", $role->value);
@@ -50,6 +50,6 @@ class CrewMemberRepository extends ServiceEntityRepository
             $qb->where("m.role = :role")->setParameter("role", $role->value);
 
         $totalCount = $qb->getQuery()->getSingleScalarResult();
-        return ceil($totalCount/PAGE_SIZE);
+        return ceil($totalCount/PaginatedEntityRepository::PAGE_SIZE);
     }
 }

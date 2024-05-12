@@ -33,21 +33,9 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                 <input type="hidden" name="_target_path" value="{{ path('home') }}">
 
-                <button onclick="signIn()" class="rounded-md bg-indigo-600 mx-10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign In</button>
+                <button type="submit" class="rounded-md bg-indigo-600 mx-10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign In</button>
                 <p>Don't have an account? <a class="underline text-indigo-600 hover:text-indigo-300 transition duration-150 ease-in-out" href="{{ path('signUp') }}">Sign Up</a></p>
             </form>
         </div>
     </div>
-    <script>
-        async function signIn()
-        {
-            const signInForm = document.getElementById("signInForm");
-            const username = document.getElementById("username").innerText;
-            const password = document.getElementById("password").innerText;
-
-            const response = await fetch("{{ path("api_login_check") }}", { body: { "username" : username, "password" : password}});
-            const data = await response.json();
-            console.log(data);
-        }
-    </script>
 {% endblock %}

@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use OpenApi\Annotations as OA;
 
 enum Roles : string
 {
@@ -18,16 +19,31 @@ enum Roles : string
     case ADMIN = 'ADMIN';
 }
 
+/**
+ * @OA\Schema(
+ *   description="User model",
+ *   type="object",
+ *   title="User model"
+ * )
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public string $current_token;
+
+    /**
+     * @OA\Property(description="ID of the user", format="int64", example=1)
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
+    /**
+     * @OA\Property(description="Username of the user", type="string", example="john_doe")
+     */
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $username;
 
@@ -39,12 +55,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: false)]
     private string $email;
 
+    /**
+     * @OA\Property(description="Whether the user is restricted", type="boolean", example=false)
+     */
     #[ORM\Column(nullable: false)]
     private bool $restricted;
 
+    /**
+     * @OA\Property(description="Date the user joined", type="string", example="2022-01-01T00:00:00+00:00")
+     */
     #[ORM\Column(nullable: false)]
     private \DateTimeImmutable $date_joined;
 
+    /**
+     * @OA\Property(description="Profile image of the user", type="string", example="path/to/image.jpg")
+     */
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile_image = null;
 
@@ -269,10 +294,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeReviewVote(ReviewVote $reviewVote): static
     {
-        if ($this->votedReviews->removeElement($reviewVote)) {
-            $reviewVote->setUser(null);
-        }
-
+        $this->votedReviews->removeElement($reviewVote);
         return $this;
     }
 }

@@ -9,27 +9,53 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *   description="Movie model",
+ *   type="object",
+ *   title="Movie model"
+ * )
+ */
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
 class Movie
 {
+    /**
+     * @OA\Property(description="ID of the movie", format="int64", example=1)
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @OA\Property(description="Title of the movie", type="string", example="The Godfather")
+     */
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    /**
+     * @OA\Property(description="Running time of the movie", type="integer", example=175)
+     */
     #[ORM\Column(nullable: true)]
     private ?int $running_time = null;
 
+    /**
+     * @OA\Property(description="Cover photo of the movie", type="string", example="path/to/image.jpg")
+     */
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $cover_photo = null;
 
+    /**
+     * @OA\Property(description="Overview of the movie", type="string", example="The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.")
+     */
     #[ORM\Column(type: Types::TEXT)]
     private ?string $overview = null;
 
+    /**
+     * @OA\Property(description="Release date of the movie", type="string", example="1972-03-14T00:00:00+00:00")
+     */
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $release_date = null;
 

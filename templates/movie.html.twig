@@ -181,15 +181,17 @@
 
                 const addr = document.createElement("p");
                 addr.className = "font-medium text-md text-white";
-                if(cinema.tags["addr:housenumber"])
-                {
-                    addr.innerHTML = cinema.tags["addr:housenumber"] + " " + cinema.tags["addr:street"];
-                }else
-                {
-                    addr.innerHTML = cinema.tags["addr:housename"];
+                if(!cinema.tags["addr:housenumber"] && !cinema.tags["addr:housename"] && !cinema.tags["addr:city"] && !cinema.tags["addr:postcode"])
+                    return;
 
-                }
-                addr.innerHTML += "<br>" + cinema.tags["addr:city"] + "<br>" + cinema.tags["addr:postcode"];
+                if(cinema.tags["addr:housenumber"])
+                    addr.innerHTML = cinema.tags["addr:housenumber"] + " " + cinema.tags["addr:street"];
+                if(cinema.tags["addr:housename"])
+                    addr.innerHTML = cinema.tags["addr:housename"];
+                if(cinema.tags["addr:city"])
+                    addr.innerHTML += "<br>" + cinema.tags["addr:city"] ;
+                if(cinema.tags["addr:postcode"])
+                    addr.innerHTML += "<br>" + cinema.tags["addr:postcode"];
 
                 container.append(addr);
                 cinemas.append(container);
@@ -202,7 +204,11 @@
                 searchCinemasNearby(pos.coords.latitude, pos.coords.longitude);
             }, (error) =>
             {
-                console.log("Failed to get pos")
+                const couldNotGetLocation = document.createElement("p");
+                couldNotGetLocation.textContent = "Could not get your location";
+                couldNotGetLocation.className = "text-xl text-gray-500 font-semibold";
+                cinemas.replaceChildren();
+                cinemas.append(couldNotGetLocation);
             });
     </script>
 {% endblock %}
